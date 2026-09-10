@@ -1,0 +1,6 @@
+{
+  "name": "VeggieFridge - Smart Vegetarian Pantry & Recipe Companion",
+  "description": "An intelligent vegetarian fridge manager and recipe suggester that tracks ingredient expiry, reduces food waste, scans receipts, and recommends budget-conscious meals tailored to your taste.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

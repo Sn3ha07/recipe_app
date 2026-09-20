@@ -1,16 +1,16 @@
 import React from 'react';
-import { 
-  X, 
-  Clock, 
-  Users, 
-  ChefHat, 
-  Bookmark, 
-  BookmarkCheck, 
-  ShoppingCart, 
-  Sparkles, 
-  ExternalLink, 
-  CheckCircle2, 
-  Coins, 
+import {
+  X,
+  Clock,
+  Users,
+  ChefHat,
+  Bookmark,
+  BookmarkCheck,
+  ShoppingCart,
+  Sparkles,
+  ExternalLink,
+  CheckCircle2,
+  Coins,
   Flame,
   ArrowRight
 } from 'lucide-react';
@@ -25,6 +25,10 @@ interface RecipeDetailModalProps {
   onAddToShoppingList: (ingredients: { name: string; amount: string; cheaperSwap?: string }[]) => void;
   onExploreRelatedRecipe: (query: string) => void;
 }
+
+// Shared look, from docs/design-system.md
+const LABEL = 'font-mono text-[11px] uppercase tracking-[0.18em] text-ink/55';
+const PILL_DARK = 'rounded-full bg-ink text-cream font-medium hover:bg-ink-soft transition-colors cursor-pointer';
 
 export const RecipeDetailModal: React.FC<RecipeDetailModalProps> = ({
   recipe,
@@ -54,18 +58,18 @@ export const RecipeDetailModal: React.FC<RecipeDetailModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-stone-900/60 backdrop-blur-xs overflow-y-auto">
-      <div 
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-ink/60 backdrop-blur-xs overflow-y-auto">
+      <div
         id="recipe-detail-modal"
-        className="bg-white rounded-3xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl border border-stone-200 animate-in fade-in zoom-in-95 duration-150"
+        className="bg-white rounded-3xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-[0_0_0_1px_rgba(33,12,2,0.1),0_24px_60px_-12px_rgba(0,0,0,0.55)] animate-in fade-in zoom-in-95 duration-150"
       >
         {/* Modal Header */}
-        <div className="sticky top-0 z-10 bg-white/95 backdrop-blur-md px-6 py-4 border-b border-stone-100 flex items-center justify-between">
+        <div className="sticky top-0 z-10 bg-white/95 backdrop-blur-md px-6 py-4 border-b border-ink/10 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800">
+            <span className="font-mono text-[10px] uppercase tracking-[0.14em] px-2.5 py-1 rounded-full bg-sky text-ink">
               {recipe.cuisine || 'Vegetarian'}
             </span>
-            <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-stone-100 text-stone-600">
+            <span className="text-xs font-medium px-2.5 py-1 rounded-full bg-cream text-ink/70">
               {recipe.difficulty}
             </span>
           </div>
@@ -73,10 +77,10 @@ export const RecipeDetailModal: React.FC<RecipeDetailModalProps> = ({
           <div className="flex items-center gap-2">
             <button
               onClick={() => onToggleFavorite(recipe)}
-              className={`p-2 rounded-xl border transition-colors flex items-center gap-1 text-xs font-semibold cursor-pointer ${
-                isFavorite 
-                  ? 'bg-amber-50 text-amber-900 border-amber-300' 
-                  : 'bg-stone-50 text-stone-600 border-stone-200 hover:bg-stone-100'
+              className={`px-3.5 py-2 rounded-full transition-colors flex items-center gap-1.5 text-xs font-medium cursor-pointer ${
+                isFavorite
+                  ? 'bg-amber-100 text-amber-900 ring-1 ring-amber-300'
+                  : 'bg-white text-ink/75 ring-1 ring-ink/15 hover:bg-cream'
               }`}
             >
               {isFavorite ? <BookmarkCheck className="w-4 h-4 text-amber-600" /> : <Bookmark className="w-4 h-4" />}
@@ -85,7 +89,7 @@ export const RecipeDetailModal: React.FC<RecipeDetailModalProps> = ({
 
             <button
               onClick={onClose}
-              className="p-2 rounded-xl text-stone-400 hover:text-stone-700 hover:bg-stone-100 transition-colors cursor-pointer"
+              className="p-2 rounded-full text-ink/50 hover:text-ink hover:bg-cream transition-colors cursor-pointer"
             >
               <X className="w-5 h-5" />
             </button>
@@ -93,72 +97,72 @@ export const RecipeDetailModal: React.FC<RecipeDetailModalProps> = ({
         </div>
 
         {/* Modal Body */}
-        <div className="p-6 space-y-6">
+        <div className="p-6 sm:p-8 space-y-7">
           {/* Title & Description */}
           <div>
-            <h2 className="font-serif font-bold text-2xl sm:text-3xl text-stone-900 leading-tight">
+            <h2 className="text-3xl sm:text-4xl font-normal tracking-[-0.03em] leading-[1.05] text-ink">
               {recipe.title}
             </h2>
-            <p className="text-sm text-stone-600 mt-2 leading-relaxed">
+            <p className="text-base text-ink/65 mt-3 leading-relaxed">
               {recipe.description}
             </p>
           </div>
 
           {/* Quick Metrics Bar */}
-          <div className="grid grid-cols-3 gap-3 p-3.5 bg-stone-50 rounded-2xl border border-stone-200/80 text-center">
+          <div className="grid grid-cols-3 gap-3 p-4 bg-cream rounded-2xl text-center">
             <div>
-              <div className="flex items-center justify-center gap-1 text-xs text-stone-500 font-medium">
-                <Clock className="w-3.5 h-3.5 text-emerald-600" />
+              <div className={`flex items-center justify-center gap-1 ${LABEL}`}>
+                <Clock className="w-3.5 h-3.5" />
                 <span>Total Time</span>
               </div>
-              <p className="text-sm font-bold text-stone-900 mt-0.5">{totalTime} mins</p>
-              <p className="text-[10px] text-stone-400">Prep {recipe.prepTimeMinutes}m • Cook {recipe.cookTimeMinutes}m</p>
+              <p className="text-lg font-medium text-ink mt-1">{totalTime} mins</p>
+              <p className="text-[11px] text-ink/50">Prep {recipe.prepTimeMinutes}m • Cook {recipe.cookTimeMinutes}m</p>
             </div>
 
-            <div className="border-x border-stone-200">
-              <div className="flex items-center justify-center gap-1 text-xs text-stone-500 font-medium">
-                <Users className="w-3.5 h-3.5 text-emerald-600" />
+            <div className="border-x border-ink/10">
+              <div className={`flex items-center justify-center gap-1 ${LABEL}`}>
+                <Users className="w-3.5 h-3.5" />
                 <span>Servings</span>
               </div>
-              <p className="text-sm font-bold text-stone-900 mt-0.5">{recipe.servings} portions</p>
-              <p className="text-[10px] text-stone-400">Generous size</p>
+              <p className="text-lg font-medium text-ink mt-1">{recipe.servings} portions</p>
+              <p className="text-[11px] text-ink/50">Generous size</p>
             </div>
 
             <div>
-              <div className="flex items-center justify-center gap-1 text-xs text-stone-500 font-medium">
-                <ChefHat className="w-3.5 h-3.5 text-emerald-600" />
+              <div className={`flex items-center justify-center gap-1 ${LABEL}`}>
+                <ChefHat className="w-3.5 h-3.5" />
                 <span>Budget Tier</span>
               </div>
-              <p className="text-sm font-bold text-stone-900 capitalize mt-0.5">{recipe.budgetTier || 'Everyday'}</p>
-              <p className="text-[10px] text-stone-400">Cost-conscious</p>
+              <p className="text-lg font-medium text-ink capitalize mt-1">{recipe.budgetTier || 'Everyday'}</p>
+              <p className="text-[11px] text-ink/50">Cost-conscious</p>
             </div>
           </div>
 
           {/* Missing Ingredients Notice */}
           {recipe.missingIngredientsCount === 0 || (!recipe.additionalIngredientsNeeded || recipe.additionalIngredientsNeeded.length === 0) ? (
-            <div className="p-3 bg-emerald-50 rounded-2xl border border-emerald-200 flex items-center gap-3">
-              <div className="p-2 rounded-xl bg-emerald-600 text-white font-bold shrink-0">
+            <div className="p-4 bg-emerald-50 rounded-2xl ring-1 ring-emerald-200 flex items-center gap-3">
+              <div className="w-9 h-9 rounded-full bg-emerald-600 text-white flex items-center justify-center shrink-0">
                 <CheckCircle2 className="w-4 h-4" />
               </div>
-              <div className="text-xs">
-                <span className="font-bold text-emerald-950">100% Ready to Cook! </span>
-                <span className="text-emerald-800">
+              <div className="text-sm">
+                <span className="font-semibold text-ink">100% Ready to Cook! </span>
+                <span className="text-ink/70">
                   All ingredients for this dish are already in your virtual fridge.
                 </span>
               </div>
             </div>
           ) : (
-            <div className="p-3.5 bg-amber-50 rounded-2xl border border-amber-300/80 flex items-start gap-3">
-              <div className="p-2 rounded-xl bg-amber-500 text-stone-950 font-bold shrink-0 mt-0.5">
+            <div className="p-4 bg-amber-50 rounded-2xl ring-1 ring-amber-200 flex items-start gap-3">
+              <div className="w-9 h-9 rounded-full bg-amber-500 text-ink flex items-center justify-center shrink-0">
                 <ShoppingCart className="w-4 h-4" />
               </div>
-              <div className="text-xs">
-                <span className="font-bold text-amber-950">
+              <div className="text-sm">
+                <span className="font-semibold text-ink">
                   {recipe.missingIngredientsCount === 1
                     ? `Requires 1 more ingredient to make this dish: ${recipe.additionalIngredientsNeeded[0]?.name}`
                     : `Requires ${recipe.additionalIngredientsNeeded.length} more ingredients to make this dish: ${recipe.additionalIngredientsNeeded.map((a) => a.name).join(', ')}`}
                 </span>
-                <p className="text-amber-800 mt-0.5">
+                <p className="text-ink/70 mt-1">
                   You already have {recipe.usedFridgeIngredients?.join(', ') || 'essential items'} in your fridge. Add the missing {recipe.additionalIngredientsNeeded.length === 1 ? 'item' : 'items'} to your shopping list to make this recipe!
                 </p>
               </div>
@@ -167,13 +171,13 @@ export const RecipeDetailModal: React.FC<RecipeDetailModalProps> = ({
 
           {/* Expiring Ingredients Rescued */}
           {recipe.expiringItemsSaved && recipe.expiringItemsSaved.length > 0 && (
-            <div className="p-3 bg-amber-50 rounded-2xl border border-amber-200 flex items-center gap-3">
-              <div className="p-2 rounded-xl bg-amber-500 text-stone-950 font-bold shrink-0">
-                <Flame className="w-4 h-4 fill-stone-950" />
+            <div className="p-4 bg-amber-50 rounded-2xl ring-1 ring-amber-200 flex items-center gap-3">
+              <div className="w-9 h-9 rounded-full bg-amber-500 text-ink flex items-center justify-center shrink-0">
+                <Flame className="w-4 h-4 fill-ink" />
               </div>
-              <div className="text-xs">
-                <span className="font-bold text-amber-950">Food Waste Saved! </span>
-                <span className="text-amber-900">
+              <div className="text-sm">
+                <span className="font-semibold text-ink">Food Waste Saved! </span>
+                <span className="text-ink/70">
                   This dish directly utilizes your expiring: {recipe.expiringItemsSaved.join(', ')}.
                 </span>
               </div>
@@ -181,12 +185,12 @@ export const RecipeDetailModal: React.FC<RecipeDetailModalProps> = ({
           )}
 
           {/* Ingredients Section (In Fridge vs Needed) */}
-          <div className="space-y-4">
-            <h3 className="font-serif font-bold text-stone-900 text-lg">Ingredients</h3>
+          <div className="space-y-5">
+            <h3 className="text-2xl font-normal tracking-[-0.03em] text-ink">Ingredients</h3>
 
             {/* In Fridge */}
             <div>
-              <p className="text-xs font-semibold text-emerald-800 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+              <p className={`mb-3 flex items-center gap-1.5 ${LABEL}`}>
                 <CheckCircle2 className="w-4 h-4 text-emerald-600" />
                 Already in your fridge ({recipe.usedFridgeIngredients?.length || 0})
               </p>
@@ -194,7 +198,7 @@ export const RecipeDetailModal: React.FC<RecipeDetailModalProps> = ({
                 {recipe.usedFridgeIngredients?.map((item, idx) => (
                   <span
                     key={idx}
-                    className="px-3 py-1 rounded-xl text-xs font-semibold bg-emerald-50 text-emerald-900 border border-emerald-200"
+                    className="px-3 py-1 rounded-full text-xs font-medium bg-emerald-50 text-emerald-800 ring-1 ring-emerald-200"
                   >
                     ✓ {item}
                   </span>
@@ -204,14 +208,14 @@ export const RecipeDetailModal: React.FC<RecipeDetailModalProps> = ({
 
             {/* Missing Ingredients with Shopping List Action */}
             {recipe.additionalIngredientsNeeded && recipe.additionalIngredientsNeeded.length > 0 && (
-              <div className="pt-2">
-                <div className="flex items-center justify-between mb-2">
-                  <p className="text-xs font-semibold text-stone-500 uppercase tracking-wider">
+              <div className="pt-1">
+                <div className="flex items-center justify-between mb-3">
+                  <p className={LABEL}>
                     Additional staples needed ({recipe.additionalIngredientsNeeded.length})
                   </p>
                   <button
                     onClick={handleAddMissingToShopping}
-                    className="text-xs font-semibold text-emerald-700 hover:text-emerald-800 flex items-center gap-1 cursor-pointer"
+                    className="text-xs font-medium text-ink hover:underline underline-offset-2 flex items-center gap-1 cursor-pointer"
                   >
                     <ShoppingCart className="w-3.5 h-3.5" />
                     <span>Add all to Shopping List</span>
@@ -221,10 +225,10 @@ export const RecipeDetailModal: React.FC<RecipeDetailModalProps> = ({
                   {recipe.additionalIngredientsNeeded.map((ing, idx) => (
                     <div
                       key={idx}
-                      className="p-2.5 rounded-xl bg-stone-50 border border-stone-200 text-xs flex items-center justify-between"
+                      className="px-4 py-3 rounded-2xl bg-cream text-sm flex items-center justify-between"
                     >
-                      <span className="font-medium text-stone-800">{ing.name}</span>
-                      <span className="text-stone-500 font-mono text-[11px]">{ing.amount}</span>
+                      <span className="font-medium text-ink">{ing.name}</span>
+                      <span className="text-ink/55 font-mono text-[11px]">{ing.amount}</span>
                     </div>
                   ))}
                 </div>
@@ -234,24 +238,24 @@ export const RecipeDetailModal: React.FC<RecipeDetailModalProps> = ({
 
           {/* Secondary Stretch Goal: Cheaper Alternative Suggestions */}
           {recipe.cheaperAlternatives && recipe.cheaperAlternatives.length > 0 && (
-            <div className="p-4 bg-amber-50/70 border border-amber-200/90 rounded-2xl space-y-2.5">
+            <div className="p-5 bg-cream rounded-2xl space-y-3">
               <div className="flex items-center gap-2">
-                <div className="p-1 rounded-lg bg-amber-500 text-stone-950 font-bold">
+                <div className="w-7 h-7 rounded-full bg-amber-200 text-amber-800 flex items-center justify-center">
                   <Coins className="w-4 h-4" />
                 </div>
-                <h4 className="font-serif font-bold text-amber-950 text-sm">
+                <h4 className="text-lg font-normal tracking-[-0.02em] text-ink">
                   Cheaper Ingredient Alternatives (Stretch Goal)
                 </h4>
               </div>
               <div className="space-y-2">
                 {recipe.cheaperAlternatives.map((alt, idx) => (
-                  <div key={idx} className="text-xs bg-white/80 p-2.5 rounded-xl border border-amber-200/60">
-                    <div className="font-semibold text-stone-900">
-                      Swap <span className="line-through text-stone-400">{alt.originalIngredient}</span> →{' '}
-                      <span className="text-emerald-700 font-bold">{alt.cheaperAlternative}</span>
+                  <div key={idx} className="text-sm bg-white p-4 rounded-2xl">
+                    <div className="font-medium text-ink">
+                      Swap <span className="line-through text-ink/40">{alt.originalIngredient}</span> →{' '}
+                      <span className="text-emerald-700 font-semibold">{alt.cheaperAlternative}</span>
                     </div>
-                    <p className="text-stone-600 mt-1">{alt.why}</p>
-                    <p className="text-amber-900 text-[11px] font-medium mt-0.5">💡 Tip: {alt.savingsTip}</p>
+                    <p className="text-ink/65 mt-1">{alt.why}</p>
+                    <p className="text-ink/80 text-xs font-medium mt-1.5">💡 Tip: {alt.savingsTip}</p>
                   </div>
                 ))}
               </div>
@@ -259,12 +263,12 @@ export const RecipeDetailModal: React.FC<RecipeDetailModalProps> = ({
           )}
 
           {/* Instructions */}
-          <div className="space-y-3">
-            <h3 className="font-serif font-bold text-stone-900 text-lg">Cooking Instructions</h3>
-            <ol className="space-y-2.5">
+          <div className="space-y-4">
+            <h3 className="text-2xl font-normal tracking-[-0.03em] text-ink">Cooking Instructions</h3>
+            <ol className="space-y-4">
               {recipe.instructions.map((step, idx) => (
-                <li key={idx} className="flex items-start gap-3 text-sm text-stone-700 leading-relaxed">
-                  <span className="w-6 h-6 rounded-full bg-stone-100 text-stone-800 font-bold text-xs flex items-center justify-center shrink-0 mt-0.5 border border-stone-200">
+                <li key={idx} className="flex items-start gap-4 text-base text-ink/80 leading-relaxed">
+                  <span className="w-7 h-7 rounded-full bg-ink text-cream font-mono text-xs flex items-center justify-center shrink-0 mt-0.5">
                     {idx + 1}
                   </span>
                   <span>{step}</span>
@@ -275,47 +279,47 @@ export const RecipeDetailModal: React.FC<RecipeDetailModalProps> = ({
 
           {/* Nutrition Highlights */}
           {recipe.nutritionHighlights && (
-            <div className="p-3 bg-stone-50 rounded-xl border border-stone-200 text-xs text-stone-600">
-              <span className="font-semibold text-stone-800">Nutrition Highlights: </span>
+            <div className="p-4 bg-cream rounded-2xl text-sm text-ink/70">
+              <span className="font-semibold text-ink">Nutrition Highlights: </span>
               {recipe.nutritionHighlights}
             </div>
           )}
 
           {/* Core Feature: Link to Other Recipes the User Can Try Out */}
           {recipe.relatedRecipeLinks && recipe.relatedRecipeLinks.length > 0 && (
-            <div className="pt-2 border-t border-stone-200 space-y-3">
+            <div className="pt-6 border-t border-ink/10 space-y-4">
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-1.5">
-                  <Sparkles className="w-4 h-4 text-emerald-600" />
-                  <h4 className="font-serif font-bold text-stone-900 text-base">
+                <div className="flex items-center gap-2">
+                  <Sparkles className="w-4 h-4 text-ink/60" />
+                  <h4 className="text-xl font-normal tracking-[-0.02em] text-ink">
                     Discover Related Recipes To Try Out
                   </h4>
                 </div>
-                <span className="text-[11px] text-stone-400">Variations & Pairings</span>
+                <span className={`hidden sm:inline ${LABEL}`}>Variations & Pairings</span>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {recipe.relatedRecipeLinks.map((link, idx) => (
                   <div
                     key={idx}
-                    className="p-3 rounded-2xl bg-stone-50 hover:bg-emerald-50/50 border border-stone-200 hover:border-emerald-200 transition-colors flex flex-col justify-between"
+                    className="p-4 rounded-2xl bg-cream hover:ring-1 hover:ring-ink/20 transition-shadow flex flex-col justify-between"
                   >
                     <div>
-                      <h5 className="font-semibold text-stone-900 text-xs flex items-center justify-between">
+                      <h5 className="font-semibold text-ink text-sm flex items-center justify-between gap-2">
                         <span>{link.title}</span>
-                        <ArrowRight className="w-3.5 h-3.5 text-emerald-600" />
+                        <ArrowRight className="w-3.5 h-3.5 text-ink/50 shrink-0" />
                       </h5>
-                      <p className="text-[11px] text-stone-600 mt-1 leading-snug">
+                      <p className="text-xs text-ink/65 mt-1.5 leading-snug">
                         {link.whyTry}
                       </p>
                     </div>
-                    <div className="mt-2 pt-2 border-t border-stone-200/60 flex items-center justify-between text-[11px]">
+                    <div className="mt-3 pt-3 border-t border-ink/10 flex items-center justify-between text-xs">
                       <button
                         onClick={() => {
                           onClose();
                           onExploreRelatedRecipe(link.query);
                         }}
-                        className="text-emerald-700 font-semibold hover:underline flex items-center gap-1 cursor-pointer"
+                        className="text-ink font-medium hover:underline underline-offset-2 flex items-center gap-1 cursor-pointer"
                       >
                         Generate variation
                       </button>
@@ -323,7 +327,7 @@ export const RecipeDetailModal: React.FC<RecipeDetailModalProps> = ({
                         href={`https://www.google.com/search?q=${encodeURIComponent(link.query + ' vegetarian recipe')}`}
                         target="_blank"
                         rel="noreferrer"
-                        className="text-stone-400 hover:text-stone-700 flex items-center gap-1"
+                        className="text-ink/50 hover:text-ink flex items-center gap-1"
                       >
                         <span>Search web</span>
                         <ExternalLink className="w-3 h-3" />
@@ -337,10 +341,10 @@ export const RecipeDetailModal: React.FC<RecipeDetailModalProps> = ({
         </div>
 
         {/* Modal Footer */}
-        <div className="sticky bottom-0 bg-stone-50 px-6 py-4 border-t border-stone-200 flex items-center justify-between">
+        <div className="sticky bottom-0 bg-cream px-6 py-4 border-t border-ink/10 flex items-center justify-between">
           <button
             onClick={() => onToggleFavorite(recipe)}
-            className="text-xs font-semibold text-stone-600 hover:text-stone-900 flex items-center gap-1.5 cursor-pointer"
+            className="text-xs font-medium text-ink/70 hover:text-ink flex items-center gap-1.5 cursor-pointer"
           >
             {isFavorite ? <BookmarkCheck className="w-4 h-4 text-amber-600" /> : <Bookmark className="w-4 h-4" />}
             <span>{isFavorite ? 'Remove from Saved' : 'Save for Later'}</span>
@@ -348,7 +352,7 @@ export const RecipeDetailModal: React.FC<RecipeDetailModalProps> = ({
 
           <button
             onClick={onClose}
-            className="px-5 py-2 rounded-xl bg-stone-900 hover:bg-stone-800 text-white text-xs font-semibold transition-colors cursor-pointer"
+            className={`px-6 py-2.5 text-xs ${PILL_DARK}`}
           >
             Done
           </button>

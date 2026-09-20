@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion } from 'motion/react';
 import { Header } from './components/Header';
 import { FridgeView } from './components/FridgeView';
@@ -16,7 +16,6 @@ import { PreferencesModal } from './components/PreferencesModal';
 import { FridgeItem, Recipe, ShoppingListItem, UserPreferences } from './types';
 import { INITIAL_FRIDGE_ITEMS, INITIAL_USER_PREFERENCES } from './utils/starterData';
 import { calculateExpiryDate, getDaysRemaining, estimateIngredientShelfLife } from './utils/expiryRules';
-import { matchRecipesToInventory } from './utils/recipeEngine';
 import { Sparkles, X, AlertCircle } from 'lucide-react';
 
 export default function App() {
@@ -106,6 +105,11 @@ export default function App() {
   // Generated Recipes State
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [isGeneratingRecipes, setIsGeneratingRecipes] = useState(false);
+  const [recipesError, setRecipesError] = useState<string | null>(null);
+  const latestRequestId = useRef(0);
+  const lastRequest = useRef<{ focusExpiring: boolean; customQuery?: string; selectedIngredients?: string[] }>({
+    focusExpiring: false,
+  });
   const [selectedCookingIngredients, setSelectedCookingIngredients] = useState<string[]>([]);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
@@ -156,25 +160,21 @@ export default function App() {
     showToast('Restored sample vegetarian fridge inventory');
   };
 
-  // Generate Recipes
+  // Generate Recipes (always asks Gemini; there are no built-in recipes)
   const handleGenerateRecipes = async (
     focusExpiring: boolean,
     customQuery?: string,
     selectedIngredients?: string[]
   ) => {
-    setIsGeneratingRecipes(true);
+    const requestId = ++latestRequestId.current;
     const activeSelected = selectedIngredients !== undefined ? selectedIngredients : selectedCookingIngredients;
+    lastRequest.current = { focusExpiring, customQuery, selectedIngredients };
 
-    // Immediately provide instant matches from inventory so user never encounters an empty screen
-    const instantMatches = matchRecipesToInventory(fridgeItems, {
-      focusExpiring,
-      selectedIngredients: activeSelected.length > 0 ? activeSelected : undefined,
-      searchQuery: customQuery,
-      preferences,
-    });
-    if (instantMatches.length > 0) {
-      setRecipes(instantMatches);
-    }
+    setIsGeneratingRecipes(true);
+    setRecipesError(null);
+
+    const controller = new AbortController();
+    const abortTimer = setTimeout(() => controller.abort(), 40000);
 
     try {
       const inventoryPayload = fridgeItems.map((item) => ({
@@ -187,6 +187,7 @@ export default function App() {
       const res = await fetch('/api/suggest-recipes', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        signal: controller.signal,
         body: JSON.stringify({
           inventory: inventoryPayload,
           preferences: {
@@ -198,32 +199,54 @@ export default function App() {
         }),
       });
 
-      const data = await res.json();
-      if (data.recipes && data.recipes.length > 0) {
+      let data: any = null;
+      try {
+        data = await res.json();
+      } catch {
+        data = null;
+      }
+
+      if (requestId !== latestRequestId.current) return;
+
+      if (res.ok && data?.recipes?.length > 0) {
         setRecipes(data.recipes);
         showToast(
           focusExpiring
             ? 'Generated recipes rescuing your expiring ingredients!'
             : 'Fresh vegetarian recipes generated!'
         );
+      } else {
+        setRecipes([]);
+        setRecipesError(
+          data?.error ||
+            (res.status === 404
+              ? "The AI recipe helper isn't available on this site yet."
+              : 'Could not get recipes right now.')
+        );
       }
-    } catch (err) {
+    } catch (err: any) {
+      if (requestId !== latestRequestId.current) return;
       console.error('Error generating recipes:', err);
-      if (instantMatches.length > 0) {
-        setRecipes(instantMatches);
-      }
-      showToast('Loaded curated vegetarian recipes for your ingredients');
+      setRecipes([]);
+      setRecipesError(
+        err?.name === 'AbortError'
+          ? 'Gemini took too long to answer.'
+          : 'Could not reach the AI recipe helper. Check your connection and try again.'
+      );
     } finally {
-      setIsGeneratingRecipes(false);
+      clearTimeout(abortTimer);
+      if (requestId === latestRequestId.current) {
+        setIsGeneratingRecipes(false);
+      }
     }
   };
 
-  // Generate initial recipes on load if empty
+  // Ask Gemini for recipes the first time the Recipes tab is opened (not on every page load, to save AI usage)
   useEffect(() => {
-    if (recipes.length === 0) {
+    if (activeTab === 'recipes' && recipes.length === 0 && !isGeneratingRecipes && !recipesError) {
       handleGenerateRecipes(false);
     }
-  }, []);
+  }, [activeTab, recipes.length, isGeneratingRecipes, recipesError]);
 
   // Action: Cook with expiring ingredients
   const handleCookWithExpiring = () => {
@@ -428,6 +451,11 @@ export default function App() {
           <RecipeView
             recipes={recipes}
             isLoading={isGeneratingRecipes}
+            error={recipesError}
+            onRetry={() => {
+              const r = lastRequest.current;
+              handleGenerateRecipes(r.focusExpiring, r.customQuery, r.selectedIngredients);
+            }}
             onGenerateRecipes={handleGenerateRecipes}
             favorites={favorites}
             onToggleFavorite={handleToggleFavorite}
@@ -494,8 +522,9 @@ export default function App() {
         preferences={preferences}
         onSavePreferences={(updated) => {
           setPreferences(updated);
-          showToast('Preferences updated! Generating new recipes...');
-          handleGenerateRecipes(false);
+          showToast('Preferences updated! New recipes will use them.');
+          setRecipes([]);
+          setRecipesError(null);
         }}
       />
 

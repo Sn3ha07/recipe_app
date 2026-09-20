@@ -21,6 +21,7 @@ export const CheaperSwapsModal: React.FC<CheaperSwapsModalProps> = ({
   const [searchTerm, setSearchTerm] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [addedSuccess, setAddedSuccess] = useState<string | null>(null);
+  const [searchMessage, setSearchMessage] = useState<{ kind: 'error' | 'info'; text: string } | null>(null);
 
   // Curated high-impact vegetarian ingredient swaps
   const [swaps, setSwaps] = useState<CheaperAlternative[]>([
@@ -70,24 +71,52 @@ export const CheaperSwapsModal: React.FC<CheaperSwapsModalProps> = ({
 
   const handleSearchAlternatives = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!searchTerm.trim()) return;
+    const term = searchTerm.trim();
+    if (!term) return;
 
     setIsLoading(true);
+    setSearchMessage(null);
+    const controller = new AbortController();
+    const abortTimer = setTimeout(() => controller.abort(), 55000);
     try {
       const res = await fetch('/api/cheaper-alternatives', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ingredients: [searchTerm.trim()] }),
+        signal: controller.signal,
+        body: JSON.stringify({ ingredients: [term] }),
       });
-      const data = await res.json();
+      let data: any = null;
+      try {
+        data = await res.json();
+      } catch {
+        data = null;
+      }
+      if (!res.ok || !data) {
+        throw new Error(
+          data?.error ||
+            (res.status === 404
+              ? "The swap finder isn't available on this site yet."
+              : 'Could not find swaps right now.')
+        );
+      }
       if (data.alternatives && data.alternatives.length > 0) {
         setSwaps((prev) => [...data.alternatives, ...prev]);
+        setSearchTerm('');
+      } else {
+        setSearchMessage({ kind: 'info', text: `No swaps found for "${term}". Try a more specific ingredient.` });
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error('Failed to fetch cheaper alternatives:', err);
+      setSearchMessage({
+        kind: 'error',
+        text:
+          err?.name === 'AbortError'
+            ? 'Gemini took too long to answer. Please try again.'
+            : err?.message || 'Could not find swaps right now.',
+      });
     } finally {
+      clearTimeout(abortTimer);
       setIsLoading(false);
-      setSearchTerm('');
     }
   };
 
@@ -158,6 +187,17 @@ export const CheaperSwapsModal: React.FC<CheaperSwapsModalProps> = ({
         </form>
       </div>
 
+      {searchMessage && (
+        <div
+          id="swaps-message"
+          className={`p-3 rounded-xl text-xs ${
+            searchMessage.kind === 'error' ? 'bg-rose-50 border border-rose-200 text-rose-700' : 'bg-stone-100 text-ink/75'
+          }`}
+        >
+          {searchMessage.text}
+        </div>
+      )}
+
       {addedSuccess && (
         <div className="p-3 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-xl text-xs flex items-center gap-2">
           <Check className="w-4 h-4 text-emerald-600" />
@@ -184,9 +224,11 @@ export const CheaperSwapsModal: React.FC<CheaperSwapsModalProps> = ({
                   </h3>
                 </div>
 
-                <span className="px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">
-                  Save ~{swap.estimatedSavingsPercentage || 70}%
-                </span>
+                {swap.estimatedSavingsPercentage !== undefined && (
+                  <span className="px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">
+                    Save ~{swap.estimatedSavingsPercentage}%
+                  </span>
+                )}
               </div>
 
               {/* Cheaper Alternative */}

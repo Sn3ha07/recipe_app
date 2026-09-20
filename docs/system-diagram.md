@@ -12,7 +12,7 @@ flowchart TD
     H["6. What the AI agent is given<br/>Ingredient names and days left,<br/>diet, budget, time limit, dislikes,<br/>what you typed, or the receipt"]
     I["7. What the AI agent is NOT given<br/>Favorites, shopping list, past requests,<br/>exact dates, store prices, who you are"]
     G["8. The AI agent (can vary)<br/>Writes every recipe, reads receipts,<br/>suggests cheaper swaps"]
-    J["9. If the AI can't answer<br/>Recipes and receipts: a short message<br/>and a Try again button. Swaps: fixed sample items"]
+    J["9. If the AI can't answer<br/>A short message and a Try again button.<br/>Nothing is faked or pre-written"]
     K["10. What you get back<br/>Recipe cards, receipt items to add<br/>to your fridge, cheaper swap ideas,<br/>colored 'days left' labels"]
 
     A --> B
@@ -56,7 +56,7 @@ flowchart TD
 3. **The built-in parts do the everyday work themselves, the same way every time.** The app looks up how long each food usually lasts, counts the days, and flags anything with 3 days or fewer left. No AI is involved in any of this. The app has no pre-written recipes.
 4. **When you open the Recipes tab or ask for more recipes, the app hands the job to the small go-between helper.** The same goes for a receipt reading or a cheaper swap. The helper is the only part that holds the private key to Google's AI. It writes the AI agent's instructions and sends them along with the information listed in box 6.
 5. **The AI agent does its one job and answers.** It writes four vegetarian recipes, or picks the vegetarian items off a receipt, or suggests cheaper substitutes. Each request stands alone: the agent has no memory of earlier ones, cannot take actions, and cannot look anything up.
-6. **If the AI can't answer, you are told.** That happens when the key is missing, Gemini returns an error, or it takes longer than about 40 seconds on a recipe request. The Recipes screen shows a short message and a Try again button. (The swap search falls back to a few fixed sample items when run without a key.)
+6. **If the AI can't answer, you are told.** That happens when the key is missing, Gemini returns an error, or it takes longer than about 40 seconds on a recipe request. The screen shows a short message, and you can try again. Nothing is faked: there are no pre-written recipes, receipt items or swap results to fall back on.
 7. **You get results back.** These include recipe cards that say whether you can cook now or what is missing, receipt items you can tick and add to your fridge, and swap ideas.
 
 ## What the AI agent is given, and what it isn't
@@ -72,10 +72,10 @@ flowchart TD
 ## What always behaves the same, and what can vary
 
 - **Always the same (blue):** the shelf-life list, the day counting and "use soon" labels, the six built-in swap ideas, the shopping list, and saving to your device.
-- **Can vary (orange):** every recipe, the receipt reading and the swap search. Nobody checks the AI's answers. It is only *asked* to keep recipes vegetarian and to respect your diet and dislikes, and nothing double-checks that it did. Do not rely on it for allergies.
+- **Can vary (orange):** every recipe, the receipt reading and the swap search (including the savings percentages, which are guesses). Nobody checks the AI's answers. It is only *asked* to keep recipes vegetarian and to respect your diet and dislikes, and nothing double-checks that it did. Do not rely on it for allergies.
 
 ## What runs where
 
-- **Recipes:** the helper runs on Vercel, so the live site can ask Gemini. This only works once a Gemini key has been added to the Vercel project. Without it, the Recipes screen says the AI helper isn't set up yet.
-- **Receipt scanner:** it also has a helper on Vercel, so the live site can read receipts with the same key. Photos are shrunk on your device first so they upload quickly.
-- **Swap search:** its helper only runs on a developer's own computer. On the live site the swap search does nothing (the six built-in swaps still show).
+- **Recipes, receipt scanner and swap search:** each has its own small helper on Vercel, so the live site can ask Gemini. All three use the same Gemini key, which has to be added to the Vercel project. Without it, each screen says the AI helper isn't set up yet.
+- **Receipt photos** are shrunk on your device first so they upload quickly.
+- **Built-in swaps:** the six starter swap ideas are always shown, whether or not the AI works.

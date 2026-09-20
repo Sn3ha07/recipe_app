@@ -27,7 +27,7 @@ Open the live site. There is nothing to sign up for.
 6. **Save recipes and build a shopping list.** Click the bookmark icon to save a recipe to the **Favorites** tab. Click **+ Add missing item** on a recipe card to put the missing ingredients on your **Shopping List**. On that tab, tick items as you buy them, then click **Transfer Bought to Fridge** to move them into your fridge with estimated expiry dates. You can also add items by hand.
 7. **Browse Budget Swaps.** This tab shows six ideas for replacing expensive ingredients with cheaper ones (for example, pumpkin seeds instead of pine nuts). Each has an **Add Swap to Shopping List** button.
 8. **Set your preferences.** The **Preferences** button (top right) lets you choose a diet type (vegetarian, vegan, Jain or gluten-free vegetarian), a budget style, a maximum cooking time, favorite cuisines, and ingredients you dislike or are allergic to. These are sent to the AI along with your fridge, but nothing double-checks that it follows them. See [What's unfinished](#whats-unfinished).
-9. **Try the receipt scanner.** The **Scan Receipt** button is meant to read a grocery receipt (a photo, or pasted text) and add the vegetarian items to your fridge. **It does not work on the live site yet.** See below.
+9. **Scan a receipt.** Click **Scan Receipt**, then upload a photo of a grocery receipt (JPG, PNG or WEBP) or paste its text. The AI picks out the vegetarian food and guesses how long each item will last. This takes about 10 to 15 seconds. Untick anything that looks wrong, then click **Add Selected to Virtual Fridge**. There is a "Paste sample grocery receipt" link if you just want to try it.
 
 **Where your information is kept:** everything you add (fridge, favorites, shopping list, preferences) is saved inside your own web browser on your own device. There are no accounts. Nobody else can see it, it won't appear on another device, and clearing your browser's site data will erase it. If you delete every ingredient, a button appears that restores the sample fridge.
 
@@ -50,11 +50,11 @@ The AI is reached through a small helper that holds a private key. The key is ke
 **Where it falls short.**
 
 - **Recipes need the key to be set up.** The live site asks Gemini through a small helper hosted on Vercel. That only works once a Gemini key has been added to the Vercel project. Without it, the Recipes screen says the AI helper isn't set up yet.
-- **Receipts and swaps are not connected on the live site.** Their helper only runs on a developer's own computer, so on the live site the receipt scanner shows a confusing error message and the Budget Swaps search box does nothing.
+- **Swaps are not connected on the live site.** The swap search helper only runs on a developer's own computer, so on the live site the Budget Swaps search box does nothing.
 - **AI can be wrong.** Recipes, cooking times, cost and savings figures, nutrition notes and shelf-life guesses are written by an AI and are not checked by a person. Treat them as ideas, not tested recipes.
 - **Diet and allergy rules are only requests.** The app asks the AI to follow your diet and avoid your dislikes, but nothing double-checks the result. Do not rely on it for allergies.
 - **It can be slow.** Recipes take roughly 10 to 20 seconds, and each request uses up some of the project's AI allowance.
-- **Receipt reading can make mistakes.** That is why the scanner lets you untick items before adding them to your fridge.
+- **Receipt reading can make mistakes.** It can misread blurry photos, mistake a non-vegetarian item for a vegetarian one, or guess a shelf life badly. That is why the scanner lets you untick items before adding them to your fridge. Photos are shrunk on your device before they are sent, and the whole photo goes to Google's AI.
 
 ## Tools used
 
@@ -84,7 +84,7 @@ This is a prototype, so quite a lot is unfinished. Here is everything I know abo
 
 - **The AI is only partly connected on the live site.**
   - Recipes work only once a Gemini key has been added in Vercel. Until then, the Recipes screen shows a "not set up" message.
-  - The receipt scanner shows a technical error message instead of reading your receipt.
+  - The receipt scanner works, but like recipes it needs the Gemini key and can fail when Google is busy.
   - The search box on Budget Swaps does nothing. The six built-in swaps still appear.
 - **Recipes are slow and can fail.** Each request takes about 10 to 20 seconds, and recipes are not saved between visits. You have to ask again.
 - **No safety check on diets or allergies.** The AI is asked to follow your preferences, but nothing verifies that it did. **Please don't rely on this app if you have an allergy or a strict diet.**
@@ -107,8 +107,8 @@ npm run dev
 
 Then open http://localhost:3000. The app uses port 3000, so close anything else that is using it first.
 
-**Without an AI key,** the app still runs, but the Recipes screen shows "The AI helper isn't set up yet." The receipt scanner and the swap search return fixed sample results no matter what you give them, so they can look like they work when they are not actually reading your input.
+**Without an AI key,** the app still runs, but the Recipes screen shows "The AI helper isn't set up yet." The receipt scanner shows the same message. The swap search returns fixed sample results no matter what you give it, so it can look like it works when it is not actually using your input.
 
 **To turn the AI on locally,** copy the file `.env.example` to a new file named `.env`, and replace the placeholder with your own Google Gemini key (you can get one from Google AI Studio). Never share your key or upload it to GitHub. The project's `.gitignore` already keeps `.env` files out of the repository.
 
-**To turn the AI on for the live site,** add the same key as an environment variable named `GEMINI_API_KEY` in the Vercel project's settings, then redeploy. The recipe helper lives in `api/suggest-recipes.ts`.
+**To turn the AI on for the live site,** add the same key as an environment variable named `GEMINI_API_KEY` in the Vercel project's settings, then redeploy. The recipe helper lives in `api/suggest-recipes.ts` and the receipt helper in `api/scan-receipt.ts`.

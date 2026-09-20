@@ -20,6 +20,34 @@ interface ReceiptScannerModalProps {
   onAddScannedItemsToFridge: (items: Omit<FridgeItem, 'id'>[]) => void;
 }
 
+// Shrinks a photo to a JPEG (longest side 2200px) so it uploads quickly and fits the server's size limit
+const downscaleImage = (file: File, maxSide = 2200, quality = 0.8): Promise<string> =>
+  new Promise((resolve, reject) => {
+    const url = URL.createObjectURL(file);
+    const img = new Image();
+    img.onload = () => {
+      const scale = Math.min(1, maxSide / Math.max(img.width, img.height));
+      const canvas = document.createElement('canvas');
+      canvas.width = Math.round(img.width * scale);
+      canvas.height = Math.round(img.height * scale);
+      const ctx = canvas.getContext('2d');
+      URL.revokeObjectURL(url);
+      if (!ctx) {
+        reject(new Error('no canvas'));
+        return;
+      }
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+      resolve(canvas.toDataURL('image/jpeg', quality));
+    };
+    img.onerror = () => {
+      URL.revokeObjectURL(url);
+      reject(new Error('unreadable'));
+    };
+    img.src = url;
+  });
+
 export const ReceiptScannerModal: React.FC<ReceiptScannerModalProps> = ({
   isOpen,
   onClose,
@@ -32,22 +60,26 @@ export const ReceiptScannerModal: React.FC<ReceiptScannerModalProps> = ({
   const [isScanning, setIsScanning] = useState<boolean>(false);
   const [extractedItems, setExtractedItems] = useState<ReceiptScanItem[]>([]);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [noItemsFound, setNoItemsFound] = useState(false);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   if (!isOpen) return null;
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    setMimeType(file.type || 'image/jpeg');
-    const reader = new FileReader();
-    reader.onload = () => {
-      setImagePreview(reader.result as string);
+    try {
+      const dataUrl = await downscaleImage(file);
+      setMimeType('image/jpeg');
+      setImagePreview(dataUrl);
       setErrorMessage(null);
-    };
-    reader.readAsDataURL(file);
+      setNoItemsFound(false);
+    } catch {
+      setErrorMessage("This photo can't be read here. Try a JPG or PNG, or paste the receipt text instead.");
+      if (fileInputRef.current) fileInputRef.current.value = '';
+    }
   };
 
   const handleScan = async () => {
@@ -58,6 +90,10 @@ export const ReceiptScannerModal: React.FC<ReceiptScannerModalProps> = ({
 
     setIsScanning(true);
     setErrorMessage(null);
+    setNoItemsFound(false);
+
+    const controller = new AbortController();
+    const abortTimer = setTimeout(() => controller.abort(), 55000);
 
     try {
       const payload: any = {};
@@ -71,12 +107,23 @@ export const ReceiptScannerModal: React.FC<ReceiptScannerModalProps> = ({
       const res = await fetch('/api/scan-receipt', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        signal: controller.signal,
         body: JSON.stringify(payload),
       });
 
-      const data = await res.json();
-      if (!res.ok) {
-        throw new Error(data.error || 'Receipt scanning failed');
+      let data: any = null;
+      try {
+        data = await res.json();
+      } catch {
+        data = null;
+      }
+      if (!res.ok || !data) {
+        throw new Error(
+          data?.error ||
+            (res.status === 404
+              ? "The receipt scanner isn't available on this site yet."
+              : 'Could not read the receipt right now.')
+        );
       }
 
       const items: ReceiptScanItem[] = (data.items || []).map((item: any) => ({
@@ -85,10 +132,16 @@ export const ReceiptScannerModal: React.FC<ReceiptScannerModalProps> = ({
       }));
 
       setExtractedItems(items);
+      setNoItemsFound(items.length === 0);
     } catch (err: any) {
       console.error('Scan error:', err);
-      setErrorMessage(err.message || 'Failed to scan receipt. Please try again or paste text.');
+      setErrorMessage(
+        err?.name === 'AbortError'
+          ? 'Gemini took too long to read the receipt. Please try again.'
+          : err?.message || 'Could not read the receipt right now.'
+      );
     } finally {
+      clearTimeout(abortTimer);
       setIsScanning(false);
     }
   };
@@ -255,6 +308,12 @@ TOTAL: $27.94`);
             <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-xs text-rose-700 flex items-center gap-2">
               <AlertCircle className="w-4 h-4 shrink-0" />
               <span>{errorMessage}</span>
+            </div>
+          )}
+
+          {noItemsFound && extractedItems.length === 0 && (
+            <div className="p-3 rounded-xl bg-stone-100 text-xs text-ink/75">
+              No vegetarian food items were found on this receipt. Try a clearer photo, or paste the item lines as text.
             </div>
           )}
 

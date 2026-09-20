@@ -106,14 +106,21 @@ export default async function handler(req: any, res: any) {
     }
 
     const ai = new GoogleGenAI({ apiKey });
-    const call = ai.models.generateContent({
-      model: MODEL,
-      contents: { parts },
-      config: {
-        responseMimeType: 'application/json',
-        responseSchema: ITEM_SCHEMA,
-        thinkingConfig: { thinkingLevel: ThinkingLevel.LOW },
-      },
+    const ask = () =>
+      ai.models.generateContent({
+        model: MODEL,
+        contents: { parts },
+        config: {
+          responseMimeType: 'application/json',
+          responseSchema: ITEM_SCHEMA,
+          thinkingConfig: { thinkingLevel: ThinkingLevel.LOW },
+        },
+      });
+    // Gemini often answers "busy" (503) for a moment, so try once more before giving up
+    const call = ask().catch(async (err: any) => {
+      if (err?.status !== 503) throw err;
+      await new Promise((resolve) => setTimeout(resolve, 1500));
+      return ask();
     });
     const timeout = new Promise<never>((_, reject) => {
       timer = setTimeout(() => reject(new PublicError(504, 'Gemini took too long to read the receipt.')), TIMEOUT_MS);

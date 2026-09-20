@@ -4,6 +4,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
+import { motion } from 'motion/react';
 import { Header } from './components/Header';
 import { FridgeView } from './components/FridgeView';
 import { RecipeView } from './components/RecipeView';
@@ -356,31 +357,44 @@ export default function App() {
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
         {/* Welcome / Quick Setup Banner on first turn */}
         {showWelcome && (
-          <div className="bg-emerald-900 text-emerald-50 rounded-3xl p-5 sm:p-6 shadow-sm border border-emerald-800 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8, y: -20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            transition={{ type: 'spring', stiffness: 350, damping: 18 }}
+            className="bg-gradient-to-br from-amber-400 to-orange-400 text-amber-950 rounded-[2rem] p-5 sm:p-6 shadow-lg shadow-orange-200 border-2 border-amber-300 flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+          >
             <div className="flex items-start gap-3.5">
-              <div className="p-2.5 rounded-2xl bg-emerald-700/80 text-emerald-200 font-bold shrink-0">
-                <Sparkles className="w-5 h-5 text-emerald-300" />
-              </div>
+              <motion.div
+                animate={{ rotate: [0, -12, 12, -8, 8, 0] }}
+                transition={{ duration: 1.6, repeat: Infinity, repeatDelay: 1.5, ease: 'easeInOut' }}
+                className="p-2.5 rounded-full bg-white/70 text-amber-600 shadow-sm shrink-0"
+              >
+                <Sparkles className="w-5 h-5" />
+              </motion.div>
               <div>
-                <h3 className="font-serif font-bold text-base sm:text-lg text-white">
+                <h3 className="font-serif font-bold text-base sm:text-lg text-amber-950">
                   Welcome to VeggieFridge!
                 </h3>
-                <p className="text-xs sm:text-sm text-emerald-200/90 mt-1 max-w-2xl leading-relaxed">
+                <p className="text-xs sm:text-sm text-amber-900/90 mt-1 max-w-2xl leading-relaxed">
                   We pre-loaded sample items with real-time expiry dates so you can see instant waste reminders and recipe generation. Add your own ingredients anytime without calculating expiry dates—we estimate guidelines automatically!
                 </p>
                 <div className="flex flex-wrap gap-2 mt-3">
-                  <button
+                  <motion.button
+                    whileHover={{ scale: 1.06, rotate: -1 }}
+                    whileTap={{ scale: 0.95 }}
                     onClick={() => setIsPreferencesOpen(true)}
-                    className="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold transition-colors"
+                    className="px-3 py-1.5 rounded-full bg-white text-amber-700 text-xs font-semibold shadow-sm transition-colors hover:bg-amber-50"
                   >
                     Personalize Diet & Budget
-                  </button>
-                  <button
+                  </motion.button>
+                  <motion.button
+                    whileHover={{ scale: 1.06, rotate: 1 }}
+                    whileTap={{ scale: 0.95 }}
                     onClick={() => setIsReceiptModalOpen(true)}
-                    className="px-3 py-1.5 rounded-xl bg-emerald-800/80 hover:bg-emerald-700 text-emerald-100 text-xs font-semibold transition-colors border border-emerald-700"
+                    className="px-3 py-1.5 rounded-full bg-amber-950/10 hover:bg-amber-950/20 text-amber-950 text-xs font-semibold transition-colors border border-amber-950/20"
                   >
                     Test Receipt Scanner
-                  </button>
+                  </motion.button>
                 </div>
               </div>
             </div>
@@ -390,12 +404,12 @@ export default function App() {
                 setShowWelcome(false);
                 localStorage.setItem('veggiefridge_onboarded', 'true');
               }}
-              className="self-start sm:self-center text-emerald-300 hover:text-white p-1 rounded-lg transition-colors cursor-pointer"
+              className="self-start sm:self-center text-amber-900/70 hover:text-amber-950 p-1 rounded-lg transition-colors cursor-pointer"
               title="Dismiss banner"
             >
               <X className="w-5 h-5" />
             </button>
-          </div>
+          </motion.div>
         )}
 
         {/* View Switcher */}

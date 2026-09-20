@@ -50,7 +50,7 @@ The AI is reached through a small helper that holds a private key. The key is ke
 **Where it falls short.**
 
 - **Recipes need the key to be set up.** The live site asks Gemini through a small helper hosted on Vercel. That only works once a Gemini key has been added to the Vercel project. Without it, the Recipes screen says the AI helper isn't set up yet.
-- **Savings figures are guesses.** The percentages on swap cards are rough estimates. The app does not look up real store prices.
+- **Savings figures are guesses.** The percentages on swap cards, and the average shown at the top of that screen, are rough estimates worked out from those cards. The app does not look up real store prices.
 - **AI can be wrong.** Recipes, cooking times, cost and savings figures, nutrition notes and shelf-life guesses are written by an AI and are not checked by a person. Treat them as ideas, not tested recipes.
 - **Diet and allergy rules are only requests.** The app asks the AI to follow your diet and avoid your dislikes, but nothing double-checks the result. Do not rely on it for allergies.
 - **It can be slow.** Recipes take roughly 10 to 20 seconds, and each request uses up some of the project's AI allowance.
@@ -82,14 +82,10 @@ The AI is reached through a small helper that holds a private key. The key is ke
 
 This is a prototype, so quite a lot is unfinished. Here is everything I know about:
 
-- **The AI is only partly connected on the live site.**
-  - Recipes work only once a Gemini key has been added in Vercel. Until then, the Recipes screen shows a "not set up" message.
-  - Recipes, the receipt scanner and the swap search all need the Gemini key, and any of them can fail when Google is busy. When that happens you see a short message and can try again.
+- **The AI depends on a Gemini key and on Google being available.** Recipes, the receipt scanner and the swap search all need the key to have been added in Vercel. Any of them can fail when Google is busy or the free allowance runs out. When that happens you see a short message and can try again.
 - **Recipes are slow and can fail.** Each request takes about 10 to 20 seconds, and recipes are not saved between visits. You have to ask again.
 - **No safety check on diets or allergies.** The AI is asked to follow your preferences, but nothing verifies that it did. **Please don't rely on this app if you have an allergy or a strict diet.**
-- **The "Rescue Expiring" button is missing on the Recipes tab**, even when items are about to expire. Use the "Cook With These Now" button on the Fridge tab instead.
 - **The receipt scanner and Budget Swaps are extras** that go beyond the app's core plan of tracking food and suggesting recipes, so they are less polished.
-- **Savings numbers are illustrative.** The "60-85% savings" figures were written by hand. The app does not look up real store prices.
 - **Only about 80 foods have known shelf lives.**
 - **No accounts and no syncing.** Your data lives only in the browser you used.
 

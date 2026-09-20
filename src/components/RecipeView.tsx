@@ -18,6 +18,7 @@ import {
 } from 'lucide-react';
 import { Recipe, FridgeItem, UserPreferences } from '../types';
 import { RecipeDetailModal } from './RecipeDetailModal';
+import { getDaysRemaining } from '../utils/expiryRules';
 
 interface RecipeViewProps {
   recipes: Recipe[];
@@ -64,7 +65,7 @@ export const RecipeView: React.FC<RecipeViewProps> = ({
   const [filterTag, setFilterTag] = useState<string>('all');
   const [customSearch, setCustomSearch] = useState('');
 
-  const expiringCount = fridgeItems.filter((i) => i.estimatedDays <= 3).length;
+  const expiringCount = fridgeItems.filter((i) => getDaysRemaining(i.expiryDate) <= 3).length;
   const favoriteIds = new Set(favorites.map((f) => f.id || f.title));
 
   // Categorize recipes by missing ingredient status

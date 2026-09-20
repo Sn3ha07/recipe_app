@@ -75,6 +75,14 @@ export const CheaperSwapsModal: React.FC<CheaperSwapsModalProps> = ({
     },
   ]);
 
+  // Average of the AI's and the built-in swaps' own rough guesses, so the box never claims more than the cards show
+  const savingsGuesses = swaps
+    .map((s) => s.estimatedSavingsPercentage)
+    .filter((n): n is number => typeof n === 'number');
+  const avgSavings = savingsGuesses.length
+    ? Math.round(savingsGuesses.reduce((a, b) => a + b, 0) / savingsGuesses.length)
+    : null;
+
   const handleSearchAlternatives = async (e: React.FormEvent) => {
     e.preventDefault();
     const term = searchTerm.trim();
@@ -157,13 +165,15 @@ export const CheaperSwapsModal: React.FC<CheaperSwapsModalProps> = ({
             </p>
           </div>
 
-          <div className="px-4 py-3 bg-cream rounded-2xl flex items-center gap-3 shrink-0">
-            <TrendingDown className="w-5 h-5 text-emerald-700" />
-            <div className="text-xs">
-              <div className="font-semibold text-ink">Avg. 60–85% Savings</div>
-              <div className="text-ink/55">Per recipe batch</div>
+          {avgSavings !== null && (
+            <div id="avg-savings" className="px-4 py-3 bg-cream rounded-2xl flex items-center gap-3 shrink-0">
+              <TrendingDown className="w-5 h-5 text-emerald-700" />
+              <div className="text-xs">
+                <div className="font-semibold text-ink">Avg. ~{avgSavings}% cheaper</div>
+                <div className="text-ink/55">Rough guess, from the swaps below</div>
+              </div>
             </div>
-          </div>
+          )}
         </div>
 
         {/* Search custom swap */}

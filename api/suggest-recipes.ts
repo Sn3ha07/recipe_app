@@ -211,7 +211,10 @@ export default async function handler(req: any, res: any) {
     } else if (err?.status === 429) {
       res.status(429).json({ error: 'Gemini is busy or the free quota is used up. Please try again in a minute.' });
     } else {
-      res.status(502).json({ error: 'Could not get recipes from Gemini right now.' });
+      res.status(502).json({
+        error: 'Could not get recipes from Gemini right now.',
+        detail: `TEMP ${err?.status ?? ''} ${String(err?.message || '').slice(0, 300)}`,
+      });
     }
   } finally {
     if (timer) clearTimeout(timer);

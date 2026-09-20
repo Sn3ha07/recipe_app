@@ -236,7 +236,7 @@ export const RecipeDetailModal: React.FC<RecipeDetailModalProps> = ({
             )}
           </div>
 
-          {/* Secondary Stretch Goal: Cheaper Alternative Suggestions */}
+          {/* Cheaper Alternative Suggestions */}
           {recipe.cheaperAlternatives && recipe.cheaperAlternatives.length > 0 && (
             <div className="p-5 bg-cream rounded-2xl space-y-3">
               <div className="flex items-center gap-2">
@@ -244,7 +244,7 @@ export const RecipeDetailModal: React.FC<RecipeDetailModalProps> = ({
                   <Coins className="w-4 h-4" />
                 </div>
                 <h4 className="text-lg font-normal tracking-[-0.02em] text-ink">
-                  Cheaper Ingredient Alternatives (Stretch Goal)
+                  Cheaper Ingredient Alternatives
                 </h4>
               </div>
               <div className="space-y-2">

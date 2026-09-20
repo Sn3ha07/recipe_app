@@ -143,7 +143,7 @@ export const CheaperSwapsModal: React.FC<CheaperSwapsModalProps> = ({
                 <Coins className="w-4 h-4" />
               </div>
               <h2 className="font-serif font-bold text-stone-900 text-xl">
-                Cheaper Ingredient Swaps (Stretch Goal)
+                Cheaper Ingredient Swaps
               </h2>
             </div>
             <p className="text-xs sm:text-sm text-stone-600 mt-1 max-w-xl">

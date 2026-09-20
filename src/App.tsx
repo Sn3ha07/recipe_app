@@ -18,6 +18,10 @@ import { INITIAL_FRIDGE_ITEMS, INITIAL_USER_PREFERENCES } from './utils/starterD
 import { calculateExpiryDate, getDaysRemaining, estimateIngredientShelfLife } from './utils/expiryRules';
 import { Sparkles, X, AlertCircle } from 'lucide-react';
 
+// Set to true to have the AI search Google for real recipes and credit their creators.
+// Needs a Gemini key with Google Search quota (the free key doesn't have it), so it's off.
+const SEARCH_GOOGLE_FOR_SOURCES = false;
+
 export default function App() {
   // Navigation
   const [activeTab, setActiveTab] = useState<'fridge' | 'recipes' | 'favorites' | 'shopping' | 'receipt' | 'swaps'>('fridge');
@@ -197,7 +201,7 @@ export default function App() {
       },
       focusExpiring,
       selectedIngredients: activeSelected.length > 0 ? activeSelected : undefined,
-      withSources: true, // ask the AI to search Google for real recipes and credit their creators
+      withSources: SEARCH_GOOGLE_FOR_SOURCES,
       alreadyShown: alreadyShown?.map((r) => ({
         title: r.title,
         cuisine: r.cuisine,
@@ -243,7 +247,7 @@ export default function App() {
 
       if (res.ok && data?.recipes?.length > 0) {
         setRecipes(data.recipes);
-        setRecipeSearch({ grounded: data.grounded === true, queries: Array.isArray(data.searchQueries) ? data.searchQueries : [] });
+        if (SEARCH_GOOGLE_FOR_SOURCES) setRecipeSearch({ grounded: data.grounded === true, queries: Array.isArray(data.searchQueries) ? data.searchQueries : [] });
         showToast(
           focusExpiring
             ? 'Generated recipes rescuing your expiring ingredients!'
@@ -324,7 +328,7 @@ export default function App() {
           setMoreError('Gemini only sent recipes you already have. Try again for different ideas.');
         } else {
           setRecipes((prev) => [...prev, ...fresh].slice(0, MAX_RECIPES));
-          setRecipeSearch((prev) => ({
+          if (SEARCH_GOOGLE_FOR_SOURCES) setRecipeSearch((prev) => ({
             grounded: data.grounded === true,
             queries: [...new Set([...(prev?.queries || []), ...(Array.isArray(data.searchQueries) ? data.searchQueries : [])])],
           }));

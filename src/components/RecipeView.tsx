@@ -306,7 +306,7 @@ export const RecipeView: React.FC<RecipeViewProps> = ({
                 Asking Gemini for recipes...
               </h3>
               <p className="text-sm text-ink/65 mt-1">
-                Gemini is reading your fridge and looking on Google for real recipes to base them on. This usually takes 10 to 30 seconds.
+                Gemini is reading your fridge and writing recipes just for you. This usually takes 5 to 15 seconds.
               </p>
             </div>
           </div>
@@ -447,7 +447,7 @@ export const RecipeView: React.FC<RecipeViewProps> = ({
             <div className={`${CARD} p-5 flex items-center gap-4`}>
               <div className="w-7 h-7 shrink-0 border-[3px] border-ink border-t-transparent rounded-full animate-spin" />
               <p className="text-sm text-ink/70">
-                <span className="font-medium text-ink">Asking Gemini for 4 more recipes...</span> This usually takes 10 to 30 seconds.
+                <span className="font-medium text-ink">Asking Gemini for 4 more recipes...</span> This usually takes 5 to 15 seconds.
               </p>
             </div>
             <SkeletonCards count={4} />

@@ -1,4 +1,5 @@
 import React from 'react';
+import { creditLine, safeUrl } from '../utils/recipeSource';
 import {
   X,
   Clock,
@@ -108,6 +109,22 @@ export const RecipeDetailModal: React.FC<RecipeDetailModalProps> = ({
             <p className="text-base text-ink/65 mt-3 leading-relaxed">
               {recipe.description}
             </p>
+            {safeUrl(recipe.source?.url) ? (
+              <div id="original-recipe" className="mt-4 p-4 rounded-2xl bg-cream ring-1 ring-ink/10 text-sm text-ink/80">
+                <p className="font-medium text-ink">{creditLine(recipe)}</p>
+                <a
+                  href={safeUrl(recipe.source?.url)!}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-block mt-1 underline underline-offset-2 text-ink min-h-6"
+                >
+                  Read the original recipe
+                </a>
+                <p className="text-xs text-ink/65 mt-1">The steps below are Gemini's short summary in its own words, so check the original for exact amounts.</p>
+              </div>
+            ) : (
+              <p className="text-xs text-ink/65 mt-3">{creditLine(recipe)}</p>
+            )}
           </div>
 
           {/* Quick Metrics Bar */}

@@ -108,6 +108,7 @@ export default function App() {
   const [recipesError, setRecipesError] = useState<string | null>(null);
   const [focusExpiringMode, setFocusExpiringMode] = useState(false);
   const latestRequestId = useRef(0);
+  const [recipeSearch, setRecipeSearch] = useState<{ grounded: boolean; queries: string[] } | null>(null);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [moreError, setMoreError] = useState<string | null>(null);
   const lastRequest = useRef<{
@@ -181,7 +182,7 @@ export default function App() {
     focusExpiring: boolean,
     customQuery: string | undefined,
     activeSelected: string[],
-    excludeTitles?: string[]
+    alreadyShown?: Recipe[]
   ) =>
     JSON.stringify({
       inventory: fridgeItems.map((item) => ({
@@ -196,7 +197,12 @@ export default function App() {
       },
       focusExpiring,
       selectedIngredients: activeSelected.length > 0 ? activeSelected : undefined,
-      excludeTitles,
+      withSources: true, // ask the AI to search Google for real recipes and credit their creators
+      alreadyShown: alreadyShown?.map((r) => ({
+        title: r.title,
+        cuisine: r.cuisine,
+        ingredients: [...(r.usedFridgeIngredients || []), ...(r.additionalIngredientsNeeded || []).map((a) => a.name)],
+      })),
     });
 
   // Generate Recipes (always asks Gemini; there are no built-in recipes)
@@ -237,6 +243,7 @@ export default function App() {
 
       if (res.ok && data?.recipes?.length > 0) {
         setRecipes(data.recipes);
+        setRecipeSearch({ grounded: data.grounded === true, queries: Array.isArray(data.searchQueries) ? data.searchQueries : [] });
         showToast(
           focusExpiring
             ? 'Generated recipes rescuing your expiring ingredients!'
@@ -275,6 +282,7 @@ export default function App() {
     const requestId = latestRequestId.current; // a fresh full request changes this, so a late answer is dropped
     const { focusExpiring, customQuery, resolvedSelected } = lastRequest.current;
     const existingTitles = recipes.map((r) => r.title);
+    const existingRecipes = recipes;
     const normalize = (t: string) => t.toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
 
     setIsLoadingMore(true);
@@ -288,7 +296,7 @@ export default function App() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         signal: controller.signal,
-        body: buildRecipeRequestBody(focusExpiring, customQuery, resolvedSelected, existingTitles),
+        body: buildRecipeRequestBody(focusExpiring, customQuery, resolvedSelected, existingRecipes),
       });
 
       let data: any = null;
@@ -316,6 +324,10 @@ export default function App() {
           setMoreError('Gemini only sent recipes you already have. Try again for different ideas.');
         } else {
           setRecipes((prev) => [...prev, ...fresh].slice(0, MAX_RECIPES));
+          setRecipeSearch((prev) => ({
+            grounded: data.grounded === true,
+            queries: [...new Set([...(prev?.queries || []), ...(Array.isArray(data.searchQueries) ? data.searchQueries : [])])],
+          }));
           showToast(`${fresh.length} more ${fresh.length === 1 ? 'recipe' : 'recipes'} added!`);
         }
       } else {
@@ -547,6 +559,7 @@ export default function App() {
             isLoading={isGeneratingRecipes}
             error={recipesError}
             focusExpiring={focusExpiringMode}
+            searchInfo={recipeSearch}
             onLoadMore={handleLoadMoreRecipes}
             isLoadingMore={isLoadingMore}
             moreError={moreError}
@@ -625,6 +638,7 @@ export default function App() {
           setRecipes([]);
           setRecipesError(null);
           setMoreError(null);
+          setRecipeSearch(null);
         }}
       />
 

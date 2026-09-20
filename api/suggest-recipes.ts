@@ -321,8 +321,9 @@ export function parseRecipeJson(text: string): any[] {
 }
 
 export interface GroundingChunk {
-  uri: string;
-  title: string; // the site's domain, as Google reports it
+  uri: string; // a Google link that opens the page
+  site: string; // the site's domain, when Google gives it (for example "minimalistbaker.com")
+  title: string; // the page's title
 }
 
 export function readGrounding(response: any): { chunks: GroundingChunk[]; queries: string[] } {
@@ -330,7 +331,15 @@ export function readGrounding(response: any): { chunks: GroundingChunk[]; querie
   const chunks: GroundingChunk[] = (Array.isArray(g?.groundingChunks) ? g.groundingChunks : [])
     .map((c: any) => c?.web)
     .filter((w: any) => w && typeof w.uri === 'string' && w.uri)
-    .map((w: any) => ({ uri: String(w.uri), title: String(w.title || '').toLowerCase().replace(/^www\./, '') }));
+    .map((w: any) => {
+      const title = String(w.title || '').toLowerCase();
+      const looksLikeDomain = /^[a-z0-9.-]+\.[a-z]{2,}$/.test(title);
+      return {
+        uri: String(w.uri),
+        site: String(w.domain || (looksLikeDomain ? title : '')).toLowerCase().replace(/^www\./, ''),
+        title,
+      };
+    });
   const queries = (Array.isArray(g?.webSearchQueries) ? g.webSearchQueries : []).slice(0, 6).map((q: unknown) => clean(q, 100)).filter(Boolean);
   return { chunks, queries };
 }
@@ -353,14 +362,18 @@ export function resolveSource(r: any, chunks: GroundingChunk[]): { name: string;
     /* no usable address */
   }
   const sameSite = (domain: string) => Boolean(domain && host && (host === domain || host.endsWith('.' + domain) || domain.endsWith('.' + host)));
-  const byUrl = chunks.find((c) => sameSite(c.title));
+  const byUrl = chunks.find((c) => sameSite(c.site));
   const byName = name
-    ? chunks.find((c) => c.title && squash(name).includes(squash(c.title.split('.')[0]) || '~'))
+    ? chunks.find(
+        (c) =>
+          (c.site && squash(name).includes(squash(c.site.split('.')[0]) || '~')) ||
+          (c.title && squash(name).length >= 4 && squash(c.title).includes(squash(name)))
+      )
     : undefined;
   const match = byUrl || byName;
   if (!match) return undefined; // Google did not return this site, so the credit cannot be trusted
   return {
-    name: name || match.title,
+    name: name || match.site || match.title,
     creator: creator || undefined,
     url: byUrl && modelUrl ? modelUrl : match.uri,
   };

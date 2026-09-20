@@ -20,12 +20,14 @@ import {
 import { Recipe, FridgeItem, UserPreferences } from '../types';
 import { RecipeDetailModal } from './RecipeDetailModal';
 import { getDaysRemaining } from '../utils/expiryRules';
+import { creditLine } from '../utils/recipeSource';
 
 interface RecipeViewProps {
   recipes: Recipe[];
   isLoading: boolean;
   error?: string | null;
   focusExpiring?: boolean;
+  searchInfo?: { grounded: boolean; queries: string[] } | null;
   onLoadMore?: () => void;
   isLoadingMore?: boolean;
   moreError?: string | null;
@@ -74,6 +76,7 @@ export const RecipeView: React.FC<RecipeViewProps> = ({
   isLoading,
   error,
   focusExpiring = false,
+  searchInfo = null,
   onLoadMore,
   isLoadingMore = false,
   moreError = null,
@@ -270,6 +273,29 @@ export const RecipeView: React.FC<RecipeViewProps> = ({
         </div>
       )}
 
+      {/* Did Google Search find real recipes? */}
+      {!isLoading && recipes.length > 0 && searchInfo && (
+        searchInfo.grounded ? (
+          searchInfo.queries.length > 0 && (
+            <p id="search-note" className="text-xs text-ink/65">
+              Found with Google Search:{' '}
+              {searchInfo.queries.slice(0, 4).map((q, i) => (
+                <span key={q}>
+                  {i > 0 && ', '}
+                  <a href={`https://www.google.com/search?q=${encodeURIComponent(q)}`} target="_blank" rel="noopener noreferrer" className="underline underline-offset-2">
+                    {q}
+                  </a>
+                </span>
+              ))}
+            </p>
+          )
+        ) : (
+          <p id="search-note" className="text-sm text-ink/80 bg-white ring-1 ring-ink/10 rounded-2xl px-4 py-3">
+            Couldn't search Google for original recipes this time, so these are written by Gemini alone and have no credits.
+          </p>
+        )
+      )}
+
       {/* 3. Recipes List */}
       {isLoading ? (
         <div className="space-y-5">
@@ -280,7 +306,7 @@ export const RecipeView: React.FC<RecipeViewProps> = ({
                 Asking Gemini for recipes...
               </h3>
               <p className="text-sm text-ink/65 mt-1">
-                Gemini is reading your fridge and writing recipes just for you. This usually takes 5 to 15 seconds.
+                Gemini is reading your fridge and looking on Google for real recipes to base them on. This usually takes 10 to 30 seconds.
               </p>
             </div>
           </div>
@@ -357,6 +383,7 @@ export const RecipeView: React.FC<RecipeViewProps> = ({
                   <h3 className="text-2xl font-normal tracking-[-0.03em] leading-tight text-ink">
                     {recipe.title}
                   </h3>
+                  <p className="text-xs text-ink/65 mt-1.5">{creditLine(recipe)}</p>
 
                   {/* One status line: can I cook this now? */}
                   {missingCount === 0 ? (
@@ -420,7 +447,7 @@ export const RecipeView: React.FC<RecipeViewProps> = ({
             <div className={`${CARD} p-5 flex items-center gap-4`}>
               <div className="w-7 h-7 shrink-0 border-[3px] border-ink border-t-transparent rounded-full animate-spin" />
               <p className="text-sm text-ink/70">
-                <span className="font-medium text-ink">Asking Gemini for 4 more recipes...</span> This usually takes 5 to 15 seconds.
+                <span className="font-medium text-ink">Asking Gemini for 4 more recipes...</span> This usually takes 10 to 30 seconds.
               </p>
             </div>
             <SkeletonCards count={4} />

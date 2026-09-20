@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { creditLine } from '../utils/recipeSource';
 import { 
   Bookmark, 
   Trash2, 
@@ -86,6 +87,7 @@ export const FavoritesView: React.FC<FavoritesViewProps> = ({
                   <h3 className="text-2xl font-normal tracking-[-0.03em] leading-tight text-ink">
                     {recipe.title}
                   </h3>
+                  <p className="text-xs text-ink/65 mt-1">{creditLine(recipe)}</p>
                   <p className="text-sm text-ink/65 mt-2 line-clamp-2 leading-relaxed">
                     {recipe.description}
                   </p>

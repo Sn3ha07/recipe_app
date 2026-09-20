@@ -63,6 +63,8 @@ export interface Recipe {
   tags?: string[];
   isFavorite?: boolean;
   savedAt?: string;
+  // The real recipe this one was adapted from, when Google Search found it
+  source?: { name: string; creator?: string; url: string };
 }
 
 export interface ShoppingListItem {

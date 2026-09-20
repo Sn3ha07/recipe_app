@@ -174,7 +174,7 @@ export default function App() {
     setRecipesError(null);
 
     const controller = new AbortController();
-    const abortTimer = setTimeout(() => controller.abort(), 40000);
+    const abortTimer = setTimeout(() => controller.abort(), 55000);
 
     try {
       const inventoryPayload = fridgeItems.map((item) => ({

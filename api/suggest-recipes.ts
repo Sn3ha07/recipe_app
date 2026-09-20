@@ -1,8 +1,8 @@
-import { GoogleGenAI, Type } from '@google/genai';
+import { GoogleGenAI, ThinkingLevel, Type } from '@google/genai';
 
 // Runs on Vercel as /api/suggest-recipes, and is mounted by server.ts for local use.
 const MODEL = process.env.GEMINI_MODEL || 'gemini-3.6-flash';
-const TIMEOUT_MS = 25000;
+const TIMEOUT_MS = 40000;
 
 class PublicError extends Error {
   status: number;
@@ -183,6 +183,7 @@ export default async function handler(req: any, res: any) {
       config: {
         responseMimeType: 'application/json',
         responseSchema: RECIPE_SCHEMA,
+        thinkingConfig: { thinkingLevel: ThinkingLevel.LOW },
       },
     });
     const timeout = new Promise<never>((_, reject) => {

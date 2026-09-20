@@ -65,7 +65,7 @@ Crucial Requirements:
 6. Numbered step-by-step instructions.`;
 }
 
-const RECIPE_SCHEMA = {
+export const RECIPE_SCHEMA = {
   type: Type.ARRAY,
   items: {
     type: Type.OBJECT,

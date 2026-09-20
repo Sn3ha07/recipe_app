@@ -31,7 +31,7 @@ For each detected vegetarian grocery ingredient:
 5. "storageTip": one crisp 1-sentence tip on how best to store this item to maximize freshness and prevent waste.
 If nothing on the receipt qualifies, return an empty list.`;
 
-const ITEM_SCHEMA = {
+export const ITEM_SCHEMA = {
   type: Type.ARRAY,
   items: {
     type: Type.OBJECT,

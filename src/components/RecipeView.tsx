@@ -12,6 +12,7 @@ import {
   SlidersHorizontal,
   RefreshCw,
   Search,
+  Plus,
   CheckCircle2,
   AlertCircle,
   X
@@ -25,6 +26,10 @@ interface RecipeViewProps {
   isLoading: boolean;
   error?: string | null;
   focusExpiring?: boolean;
+  onLoadMore?: () => void;
+  isLoadingMore?: boolean;
+  moreError?: string | null;
+  maxRecipes?: number;
   onRetry?: () => void;
   onGenerateRecipes: (focusExpiring: boolean, customQuery?: string, selectedIngredients?: string[]) => void;
   favorites: Recipe[];
@@ -47,11 +52,32 @@ const filterPill = (active: boolean, idle = 'bg-white text-ink/75 ring-1 ring-in
     active ? 'bg-ink text-cream' : idle
   }`;
 
+const SkeletonCards: React.FC<{ count?: number }> = ({ count = 3 }) => (
+  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5" aria-hidden="true">
+    {Array.from({ length: count }, (_, i) => (
+      <div key={i} className="bg-white ring-1 ring-ink/10 rounded-3xl p-6 space-y-4 animate-pulse">
+        <div className="h-4 w-24 rounded-full bg-cream" />
+        <div className="h-8 w-4/5 rounded-lg bg-cream" />
+        <div className="h-9 rounded-2xl bg-cream" />
+        <div className="h-4 w-1/2 rounded bg-cream" />
+        <div className="flex justify-between pt-4">
+          <div className="h-11 w-32 rounded-full bg-cream" />
+          <div className="h-11 w-32 rounded-full bg-ink/10" />
+        </div>
+      </div>
+    ))}
+  </div>
+);
+
 export const RecipeView: React.FC<RecipeViewProps> = ({
   recipes,
   isLoading,
   error,
   focusExpiring = false,
+  onLoadMore,
+  isLoadingMore = false,
+  moreError = null,
+  maxRecipes = 20,
   onRetry,
   onGenerateRecipes,
   favorites,
@@ -180,7 +206,7 @@ export const RecipeView: React.FC<RecipeViewProps> = ({
             <button
               id="btn-new-recipes"
               onClick={() => onGenerateRecipes(focusExpiring, undefined, selectedCookingIngredients)}
-              disabled={isLoading || fridgeItems.length === 0}
+              disabled={isLoading || isLoadingMore || fridgeItems.length === 0}
               className={`px-5 min-h-11 text-sm flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed ${PILL_DARK}`}
             >
               <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
@@ -192,7 +218,7 @@ export const RecipeView: React.FC<RecipeViewProps> = ({
                 id="btn-use-expiring"
                 aria-pressed={focusExpiring}
                 onClick={() => onGenerateRecipes(!focusExpiring, undefined, selectedCookingIngredients)}
-                disabled={isLoading}
+                disabled={isLoading || isLoadingMore}
                 className={`px-4 min-h-11 rounded-full text-sm font-medium transition-colors flex items-center gap-1.5 cursor-pointer disabled:opacity-50 ${
                   focusExpiring
                     ? 'bg-amber-200 text-ink ring-2 ring-amber-400'
@@ -258,20 +284,7 @@ export const RecipeView: React.FC<RecipeViewProps> = ({
               </p>
             </div>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5" aria-hidden="true">
-            {[0, 1, 2].map((i) => (
-              <div key={i} className="bg-white ring-1 ring-ink/10 rounded-3xl p-6 space-y-4 animate-pulse">
-                <div className="h-4 w-24 rounded-full bg-cream" />
-                <div className="h-8 w-4/5 rounded-lg bg-cream" />
-                <div className="h-9 rounded-2xl bg-cream" />
-                <div className="h-4 w-1/2 rounded bg-cream" />
-                <div className="flex justify-between pt-4">
-                  <div className="h-11 w-32 rounded-full bg-cream" />
-                  <div className="h-11 w-32 rounded-full bg-ink/10" />
-                </div>
-              </div>
-            ))}
-          </div>
+          <SkeletonCards count={3} />
         </div>
       ) : error ? (
         <div id="recipes-error" className={`${CARD} p-12 text-center`}>
@@ -306,6 +319,7 @@ export const RecipeView: React.FC<RecipeViewProps> = ({
           </div>
         </div>
       ) : (
+        <>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
           {filteredRecipes.map((recipe) => {
             const isFav = favoriteIds.has(recipe.id) || favoriteIds.has(recipe.title);
@@ -399,6 +413,45 @@ export const RecipeView: React.FC<RecipeViewProps> = ({
             );
           })}
         </div>
+
+        {/* Ask for 4 more, added below the ones already here */}
+        {isLoadingMore && (
+          <div id="more-recipes-loading" className="space-y-5">
+            <div className={`${CARD} p-5 flex items-center gap-4`}>
+              <div className="w-7 h-7 shrink-0 border-[3px] border-ink border-t-transparent rounded-full animate-spin" />
+              <p className="text-sm text-ink/70">
+                <span className="font-medium text-ink">Asking Gemini for 4 more recipes...</span> This usually takes 5 to 15 seconds.
+              </p>
+            </div>
+            <SkeletonCards count={4} />
+          </div>
+        )}
+
+        {!isLoadingMore && onLoadMore && (
+          <div className="flex flex-col items-center gap-3 pt-2">
+            {moreError && (
+              <p id="more-recipes-error" role="alert" className="text-sm text-rose-700 bg-rose-50 ring-1 ring-rose-200 rounded-2xl px-4 py-3 max-w-lg text-center">
+                Couldn't get more recipes. {moreError}
+              </p>
+            )}
+            {recipes.length >= maxRecipes ? (
+              <p id="more-recipes-limit" className="text-sm text-ink/65 text-center max-w-md">
+                That's the most recipes shown at once. Use "Get New Recipes" above for a fresh set.
+              </p>
+            ) : (
+              <button
+                id="btn-more-recipes"
+                onClick={onLoadMore}
+                disabled={isLoading}
+                className="px-6 min-h-11 rounded-full bg-white text-ink ring-1 ring-ink/25 hover:bg-cream text-sm font-medium transition-colors flex items-center gap-2 cursor-pointer disabled:opacity-50"
+              >
+                <Plus className="w-4 h-4" />
+                <span>{moreError ? 'Try again' : `Get ${Math.min(4, maxRecipes - recipes.length)} more ${maxRecipes - recipes.length === 1 ? 'recipe' : 'recipes'}`}</span>
+              </button>
+            )}
+          </div>
+        )}
+        </>
       )}
 
       {/* Recipe Detail Modal */}

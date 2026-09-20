@@ -63,7 +63,7 @@ flowchart TD
 
 | Job | Given | Not given |
 |---|---|---|
-| **New recipes** | Your ingredient names, quantities and days left (with "expiring soon" flagged), your diet, budget style, longest cooking time, favorite cuisines, dislikes and allergies, whatever you typed in the recipe search (or the ingredients you selected), and whether you asked to "rescue" expiring food | Your favorites, your shopping list, past requests or answers, exact expiry dates, storage tips, store prices, or anything about who you are |
+| **New recipes** | Your ingredient names, quantities and days left (with "expiring soon" flagged), your diet, budget style, longest cooking time, favorite cuisines, dislikes and allergies, whatever you typed in the recipe search (or the ingredients you selected), whether you asked to "rescue" expiring food, and, when you ask for 4 more recipes, the names of the recipes already on screen (so it does not repeat them) | Your favorites, your shopping list, past requests or answers, exact expiry dates, storage tips, store prices, or anything about who you are |
 | **Reading a receipt** | Only the receipt photo (shrunk on your device first) or the pasted text | Everything about your fridge, favorites and preferences |
 | **Cheaper swaps** | Only the ingredient you typed | Everything else |
 

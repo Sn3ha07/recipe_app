@@ -108,8 +108,16 @@ export default function App() {
   const [recipesError, setRecipesError] = useState<string | null>(null);
   const [focusExpiringMode, setFocusExpiringMode] = useState(false);
   const latestRequestId = useRef(0);
-  const lastRequest = useRef<{ focusExpiring: boolean; customQuery?: string; selectedIngredients?: string[] }>({
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [moreError, setMoreError] = useState<string | null>(null);
+  const lastRequest = useRef<{
+    focusExpiring: boolean;
+    customQuery?: string;
+    selectedIngredients?: string[];
+    resolvedSelected: string[];
+  }>({
     focusExpiring: false,
+    resolvedSelected: [],
   });
   const [selectedCookingIngredients, setSelectedCookingIngredients] = useState<string[]>([]);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
@@ -166,6 +174,31 @@ export default function App() {
     showToast('Restored sample vegetarian fridge inventory');
   };
 
+  const MAX_RECIPES = 20; // "Get 4 more" stops here to keep answers fast and prompts short
+
+  // The information sent to the AI for a recipe request
+  const buildRecipeRequestBody = (
+    focusExpiring: boolean,
+    customQuery: string | undefined,
+    activeSelected: string[],
+    excludeTitles?: string[]
+  ) =>
+    JSON.stringify({
+      inventory: fridgeItems.map((item) => ({
+        name: item.name,
+        quantity: item.quantity,
+        category: item.category,
+        daysLeft: getDaysRemaining(item.expiryDate),
+      })),
+      preferences: {
+        ...preferences,
+        customQuery: customQuery || (activeSelected.length > 0 ? `Dishes highlighting ${activeSelected.join(', ')}` : undefined),
+      },
+      focusExpiring,
+      selectedIngredients: activeSelected.length > 0 ? activeSelected : undefined,
+      excludeTitles,
+    });
+
   // Generate Recipes (always asks Gemini; there are no built-in recipes)
   const handleGenerateRecipes = async (
     focusExpiring: boolean,
@@ -174,36 +207,23 @@ export default function App() {
   ) => {
     const requestId = ++latestRequestId.current;
     const activeSelected = selectedIngredients !== undefined ? selectedIngredients : selectedCookingIngredients;
-    lastRequest.current = { focusExpiring, customQuery, selectedIngredients };
+    lastRequest.current = { focusExpiring, customQuery, selectedIngredients, resolvedSelected: activeSelected };
     setFocusExpiringMode(focusExpiring);
 
     setIsGeneratingRecipes(true);
     setRecipesError(null);
+    setIsLoadingMore(false);
+    setMoreError(null);
 
     const controller = new AbortController();
     const abortTimer = setTimeout(() => controller.abort(), 55000);
 
     try {
-      const inventoryPayload = fridgeItems.map((item) => ({
-        name: item.name,
-        quantity: item.quantity,
-        category: item.category,
-        daysLeft: getDaysRemaining(item.expiryDate),
-      }));
-
       const res = await fetch('/api/suggest-recipes', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         signal: controller.signal,
-        body: JSON.stringify({
-          inventory: inventoryPayload,
-          preferences: {
-            ...preferences,
-            customQuery: customQuery || (activeSelected.length > 0 ? `Dishes highlighting ${activeSelected.join(', ')}` : undefined),
-          },
-          focusExpiring,
-          selectedIngredients: activeSelected.length > 0 ? activeSelected : undefined,
-        }),
+        body: buildRecipeRequestBody(focusExpiring, customQuery, activeSelected),
       });
 
       let data: any = null;
@@ -244,6 +264,75 @@ export default function App() {
       clearTimeout(abortTimer);
       if (requestId === latestRequestId.current) {
         setIsGeneratingRecipes(false);
+      }
+    }
+  };
+
+  // Add 4 more recipes to the list, asking the AI not to repeat the ones already shown
+  const handleLoadMoreRecipes = async () => {
+    if (isLoadingMore || isGeneratingRecipes || recipes.length === 0 || recipes.length >= MAX_RECIPES) return;
+
+    const requestId = latestRequestId.current; // a fresh full request changes this, so a late answer is dropped
+    const { focusExpiring, customQuery, resolvedSelected } = lastRequest.current;
+    const existingTitles = recipes.map((r) => r.title);
+    const normalize = (t: string) => t.toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
+
+    setIsLoadingMore(true);
+    setMoreError(null);
+
+    const controller = new AbortController();
+    const abortTimer = setTimeout(() => controller.abort(), 55000);
+
+    try {
+      const res = await fetch('/api/suggest-recipes', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        signal: controller.signal,
+        body: buildRecipeRequestBody(focusExpiring, customQuery, resolvedSelected, existingTitles),
+      });
+
+      let data: any = null;
+      try {
+        data = await res.json();
+      } catch {
+        data = null;
+      }
+
+      if (requestId !== latestRequestId.current) return;
+
+      if (res.ok && data?.recipes?.length > 0) {
+        const seen = new Set(existingTitles.map(normalize));
+        const stamp = Date.now();
+        const fresh: Recipe[] = data.recipes
+          .filter((r: Recipe) => {
+            const key = normalize(r.title || '');
+            if (!key || seen.has(key)) return false;
+            seen.add(key);
+            return true;
+          })
+          .map((r: Recipe, i: number) => ({ ...r, id: `recipe-more-${stamp}-${i}` }));
+
+        if (fresh.length === 0) {
+          setMoreError('Gemini only sent recipes you already have. Try again for different ideas.');
+        } else {
+          setRecipes((prev) => [...prev, ...fresh].slice(0, MAX_RECIPES));
+          showToast(`${fresh.length} more ${fresh.length === 1 ? 'recipe' : 'recipes'} added!`);
+        }
+      } else {
+        setMoreError(data?.error || 'Could not get more recipes right now.');
+      }
+    } catch (err: any) {
+      if (requestId !== latestRequestId.current) return;
+      console.error('Error getting more recipes:', err);
+      setMoreError(
+        err?.name === 'AbortError'
+          ? 'Gemini took too long to answer.'
+          : 'Could not reach the AI recipe helper. Check your connection and try again.'
+      );
+    } finally {
+      clearTimeout(abortTimer);
+      if (requestId === latestRequestId.current) {
+        setIsLoadingMore(false);
       }
     }
   };
@@ -458,6 +547,10 @@ export default function App() {
             isLoading={isGeneratingRecipes}
             error={recipesError}
             focusExpiring={focusExpiringMode}
+            onLoadMore={handleLoadMoreRecipes}
+            isLoadingMore={isLoadingMore}
+            moreError={moreError}
+            maxRecipes={MAX_RECIPES}
             onRetry={() => {
               const r = lastRequest.current;
               handleGenerateRecipes(r.focusExpiring, r.customQuery, r.selectedIngredients);
@@ -531,6 +624,7 @@ export default function App() {
           showToast('Preferences updated! New recipes will use them.');
           setRecipes([]);
           setRecipesError(null);
+          setMoreError(null);
         }}
       />
 

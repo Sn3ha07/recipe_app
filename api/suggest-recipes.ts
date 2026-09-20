@@ -71,6 +71,11 @@ export function buildPrompt(body: any): string {
   const maxTime = Number.isFinite(preferences.cookingTimeMax) ? preferences.cookingTimeMax : 40;
   const cuisines = cleanList(preferences.cuisinePreferences).join(', ') || 'Diverse global comfort & fresh flavours';
   const dislikes = cleanList(preferences.allergiesOrDislikes).join(', ') || 'None specified';
+  // Recipes the person already has, so "more recipes" gives different ones
+  const alreadyShown = (Array.isArray(body?.excludeTitles) ? body.excludeTitles : [])
+    .slice(0, 24)
+    .map((t: unknown) => clean(t, 80))
+    .filter(Boolean);
   const customQuery = clean(preferences.customQuery, 200)
     ? `User specifically asked for: "${clean(preferences.customQuery, 200)}". Prioritize this request.`
     : '';
@@ -82,7 +87,7 @@ Available ingredients in the user's fridge/pantry:
 ${inventoryList || 'Assorted vegetables, tofu, greens, spices, and grains'}
 
 ${customQuery}
-
+${alreadyShown.length ? `\nThe user already has these recipes. Do NOT repeat them or write near-duplicates; suggest clearly different dishes:\n${alreadyShown.map((t: string) => `- ${t}`).join('\n')}\n` : ''}
 User Preferences:
 - Dietary constraint: ${dietary} (All recipes MUST be strictly vegetarian. If vegan: no dairy/eggs/honey. If jain: no root vegetables, onions, or garlic. If gluten_free: strictly gluten-free ingredients.)
 - Budget Level: ${budgetTier} (${budgetTier === 'budget' ? 'Maximize inexpensive pantry staples and cheap swaps' : budgetTier === 'gourmet' ? 'Elevated culinary technique and restaurant-style presentation' : 'Accessible everyday balanced cooking'})

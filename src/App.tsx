@@ -528,7 +528,7 @@ export default function App() {
         }}
       />
 
-      {/* Receipt Scanner Modal (Stretch Goal 1) */}
+      {/* Receipt Scanner Modal */}
       <ReceiptScannerModal
         isOpen={isReceiptModalOpen}
         onClose={() => setIsReceiptModalOpen(false)}

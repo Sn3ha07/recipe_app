@@ -199,7 +199,7 @@ TOTAL: $27.94`);
             </div>
             <div>
               <h2 className="font-serif font-bold text-lg text-stone-900">
-                Receipt Scanner (Stretch Goal)
+                Receipt Scanner
               </h2>
               <p className="text-xs text-stone-500">
                 Auto-extract vegetarian groceries and estimate shelf-life

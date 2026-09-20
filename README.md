@@ -88,7 +88,7 @@ This is a prototype, so quite a lot is unfinished. Here is everything I know abo
 - **Recipes are slow and can fail.** Each request takes about 10 to 20 seconds, and recipes are not saved between visits. You have to ask again.
 - **No safety check on diets or allergies.** The AI is asked to follow your preferences, but nothing verifies that it did. **Please don't rely on this app if you have an allergy or a strict diet.**
 - **The "Rescue Expiring" button is missing on the Recipes tab**, even when items are about to expire. Use the "Cook With These Now" button on the Fridge tab instead.
-- **The receipt scanner and Budget Swaps are extras.** Both are labeled "Stretch Goal" inside the app, meaning they were beyond the core plan.
+- **Budget Swaps is an extra.** It is labeled "Stretch Goal" inside the app, meaning it was beyond the core plan.
 - **Savings numbers are illustrative.** The "60-85% savings" figures were written by hand. The app does not look up real store prices.
 - **Only about 80 foods have known shelf lives.**
 - **No accounts and no syncing.** Your data lives only in the browser you used.

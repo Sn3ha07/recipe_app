@@ -23,7 +23,7 @@ flowchart TD
     H --> G
     I -. "never sent" .- G
     G --> F
-    F -. "no key, an error, or no answer<br/>within about 25 seconds" .-> J
+    F -. "no key, an error, or no answer<br/>within about 40 seconds" .-> J
     C --> K
     G --> K
     J --> K
@@ -56,7 +56,7 @@ flowchart TD
 3. **The built-in parts do the everyday work themselves, the same way every time.** The app looks up how long each food usually lasts, counts the days, and flags anything with 3 days or fewer left. No AI is involved in any of this. The app has no pre-written recipes.
 4. **When you open the Recipes tab or ask for more recipes, the app hands the job to the small go-between helper.** The same goes for a receipt reading or a cheaper swap. The helper is the only part that holds the private key to Google's AI. It writes the AI agent's instructions and sends them along with the information listed in box 6.
 5. **The AI agent does its one job and answers.** It writes four vegetarian recipes, or picks the vegetarian items off a receipt, or suggests cheaper substitutes. Each request stands alone: the agent has no memory of earlier ones, cannot take actions, and cannot look anything up.
-6. **If the AI can't answer, you are told.** That happens when the key is missing, Gemini returns an error, or it takes longer than about 25 seconds on a recipe request. The Recipes screen shows a short message and a Try again button. (Receipts and swaps fall back to a few fixed sample items when run without a key.)
+6. **If the AI can't answer, you are told.** That happens when the key is missing, Gemini returns an error, or it takes longer than about 40 seconds on a recipe request. The Recipes screen shows a short message and a Try again button. (Receipts and swaps fall back to a few fixed sample items when run without a key.)
 7. **You get results back.** These include recipe cards that say whether you can cook now or what is missing, receipt items you can tick and add to your fridge, and swap ideas.
 
 ## What the AI agent is given, and what it isn't

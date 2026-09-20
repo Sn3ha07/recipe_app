@@ -210,11 +210,14 @@ export default async function handler(req: any, res: any) {
       res.status(err.status).json({ error: err.message });
     } else if (err?.status === 429) {
       res.status(429).json({ error: 'Gemini is busy or the free quota is used up. Please try again in a minute.' });
+    } else if (err?.status === 503) {
+      res.status(503).json({ error: 'Gemini is very busy right now. Please try again in a moment.' });
+    } else if (err?.status === 400 || err?.status === 401 || err?.status === 403) {
+      res.status(502).json({ error: 'Gemini did not accept the key. Check that it is valid and allowed to use the Gemini API.' });
+    } else if (err?.status === 404) {
+      res.status(502).json({ error: 'Gemini no longer offers the model this app asks for.' });
     } else {
-      res.status(502).json({
-        error: 'Could not get recipes from Gemini right now.',
-        detail: `TEMP ${err?.status ?? ''} ${String(err?.message || '').slice(0, 300)}`,
-      });
+      res.status(502).json({ error: 'Could not get recipes from Gemini right now.' });
     }
   } finally {
     if (timer) clearTimeout(timer);

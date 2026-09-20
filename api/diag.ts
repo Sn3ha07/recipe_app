@@ -1,4 +1,4 @@
-// TEMPORARY diagnostic: lists Gemini models and Google's raw error text. Never returns the key. Delete after use.
+// TEMPORARY diagnostic: measures how reliably each Gemini model answers. Never returns the key. Delete after use.
 import { GoogleGenAI } from '@google/genai';
 
 export default async function handler(_req: any, res: any) {
@@ -8,24 +8,24 @@ export default async function handler(_req: any, res: any) {
     return;
   }
   const ai = new GoogleGenAI({ apiKey });
-  const out: any = { models: [], tests: [] };
-  try {
-    const pager: any = await ai.models.list({ config: { pageSize: 100 } });
-    for await (const m of pager) {
-      const actions = m.supportedActions || [];
-      if (actions.includes('generateContent') && /gemini/i.test(m.name || '')) out.models.push(String(m.name).replace('models/', ''));
-    }
-  } catch (err: any) {
-    out.listError = `${err?.status ?? ''} ${String(err?.message || '').slice(0, 300)}`;
-  }
-  const candidates = out.models.filter((n: string) => /flash|lite/i.test(n) && !/image|tts|live|audio|embedding|robotics/i.test(n)).slice(0, 8);
-  for (const model of candidates) {
-    try {
-      await ai.models.generateContent({ model, contents: 'Reply with the single word: ok' });
-      out.tests.push({ model, result: 'ok' });
-    } catch (err: any) {
-      out.tests.push({ model, result: `${err?.status ?? ''} ${String(err?.message || '').replace(/\s+/g, ' ').slice(0, 350)}` });
-    }
-  }
+  const models = ['gemini-3.5-flash', 'gemini-3.6-flash', 'gemini-3.7-flash', 'gemini-3.8-flash', 'gemini-3.5-flash-lite', 'gemini-3.1-flash-lite'];
+  const out: any = {};
+  await Promise.all(
+    models.map(async (model) => {
+      const results: string[] = [];
+      const times: number[] = [];
+      for (let i = 0; i < 4; i++) {
+        const t0 = Date.now();
+        try {
+          await ai.models.generateContent({ model, contents: 'Reply with the single word: ok' });
+          results.push('ok');
+        } catch (err: any) {
+          results.push(String(err?.status ?? 'err') + (err?.status === 429 ? ':' + String(err?.message || '').replace(/\s+/g, ' ').slice(0, 200) : ''));
+        }
+        times.push(Date.now() - t0);
+      }
+      out[model] = { results, ms: times };
+    })
+  );
   res.status(200).json(out);
 }

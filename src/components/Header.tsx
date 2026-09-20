@@ -39,7 +39,7 @@ export const Header: React.FC<HeaderProps> = ({
 
   const mobileClass = (active: boolean) =>
     `flex flex-col items-center py-1 px-2.5 rounded-lg text-[11px] font-medium relative ${
-      active ? 'text-brand-red' : 'text-ink/55'
+      active ? 'text-ink font-semibold' : 'text-ink/55'
     }`;
 
   return (
@@ -97,7 +97,7 @@ export const Header: React.FC<HeaderProps> = ({
               <ShoppingCart className="w-4 h-4" />
               <span>Shopping List</span>
               {shoppingCount > 0 && (
-                <span className="font-mono text-[11px] px-1.5 py-0.5 rounded-full bg-brand-red text-white">
+                <span className={`font-mono text-[11px] px-1.5 py-0.5 rounded-full ${activeTab === 'shopping' ? 'bg-cream text-ink' : 'bg-ink text-cream'}`}>
                   {shoppingCount}
                 </span>
               )}
@@ -152,7 +152,7 @@ export const Header: React.FC<HeaderProps> = ({
             <ShoppingCart className="w-4 h-4" />
             <span>List</span>
             {shoppingCount > 0 && (
-              <span className="absolute top-0 right-1 w-2 h-2 rounded-full bg-brand-red"></span>
+              <span className="absolute top-0 right-1 w-2 h-2 rounded-full bg-ink"></span>
             )}
           </button>
 

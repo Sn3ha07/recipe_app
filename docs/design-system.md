@@ -11,7 +11,7 @@ The same values live in `src/index.css` as named settings, so screens can use th
 | Cream | `#F0EBE2` | Page background, the main header |
 | Ink | `#210C02` | Text, dark buttons, dark sections |
 | Ink (soft) | `#3A1D12` | Secondary dark surfaces |
-| Red | `#C42121` | The one bold accent: big color bands, alerts, key highlights |
+| Red | `#C42121` | Errors and warnings only. In this app red means "something is wrong," so it is never used as decoration. |
 | White | `#FFFFFF` | Cards, inputs, the light pill buttons |
 | Sand | `#E1D8C4` | Soft text on dark backgrounds |
 | Sky | `#D3E6FF` | Tiny badges only |

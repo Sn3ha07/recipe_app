@@ -361,7 +361,7 @@ export default function App() {
             initial={{ opacity: 0, scale: 0.8, y: -20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             transition={{ type: 'spring', stiffness: 350, damping: 18 }}
-            className="bg-brand-red text-white rounded-3xl p-6 sm:p-8 shadow-[0_0_0_1px_rgba(33,12,2,0.1),0_8px_24px_rgba(0,0,0,0.18)] flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+            className="bg-ink text-white rounded-3xl p-6 sm:p-8 shadow-[0_0_0_1px_rgba(33,12,2,0.1),0_8px_24px_rgba(0,0,0,0.18)] flex flex-col sm:flex-row sm:items-center justify-between gap-4"
           >
             <div className="flex items-start gap-4">
               <motion.div

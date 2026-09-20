@@ -141,7 +141,7 @@ export const FridgeView: React.FC<FridgeViewProps> = ({
       herbs_spices: { label: 'Herbs & Seasoning', color: 'bg-emerald-50 text-emerald-800 ring-1 ring-emerald-200' },
       pantry: { label: 'Pantry', color: 'bg-amber-100 text-amber-900' },
       bakery: { label: 'Bakery', color: 'bg-amber-50 text-amber-900 ring-1 ring-amber-200' },
-      condiments: { label: 'Condiments', color: 'bg-brand-red/10 text-brand-red' },
+      condiments: { label: 'Condiments', color: 'bg-stone-200 text-stone-700' },
       other: { label: 'Item', color: 'bg-stone-100 text-stone-700' },
     };
     return labels[cat] || labels.other;
@@ -470,7 +470,7 @@ export const FridgeView: React.FC<FridgeViewProps> = ({
                     <button
                       type="button"
                       onClick={() => onCookWithIngredient(item.name)}
-                      className="inline-flex items-center gap-1.5 text-ink font-medium hover:text-brand-red transition-colors cursor-pointer py-1"
+                      className="inline-flex items-center gap-1.5 text-ink font-medium hover:underline underline-offset-2 transition-colors cursor-pointer py-1"
                     >
                       <UtensilsCrossed className="w-3.5 h-3.5" />
                       <span>Find recipes</span>

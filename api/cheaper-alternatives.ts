@@ -1,8 +1,43 @@
 import { GoogleGenAI, ThinkingLevel, Type } from '@google/genai';
 
 // Runs on Vercel as /api/cheaper-alternatives, and is mounted by server.ts for local use.
-const MODEL = process.env.GEMINI_MODEL || 'gemini-3.6-flash';
-const TIMEOUT_MS = 40000;
+
+// Models to try in order. Each has its own free allowance, and any of them can be busy, so we move on to the next.
+const DEFAULT_MODELS = ['gemini-3.5-flash-lite', 'gemini-3.1-flash-lite', 'gemini-3.5-flash', 'gemini-3.6-flash'];
+const MODELS = process.env.GEMINI_MODEL ? [process.env.GEMINI_MODEL, ...DEFAULT_MODELS] : DEFAULT_MODELS;
+const PER_MODEL_MS = 25000;
+const TOTAL_MS = 45000;
+const MOVE_ON_STATUSES = [404, 429, 500, 503, 504];
+
+export async function askWithFallback(ai: GoogleGenAI, request: any): Promise<any> {
+  const started = Date.now();
+  const failures: any[] = [];
+  for (const model of MODELS) {
+    const remaining = TOTAL_MS - (Date.now() - started);
+    if (remaining < 4000) break;
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    try {
+      const call = ai.models.generateContent({ model, ...request });
+      const timeout = new Promise<never>((_, reject) => {
+        timer = setTimeout(() => reject({ status: 504, message: 'timeout' }), Math.min(PER_MODEL_MS, remaining));
+      });
+      return await Promise.race([call, timeout]);
+    } catch (err: any) {
+      failures.push(err);
+      console.error(`model ${model} failed:`, err?.status ?? '', String(err?.message || '').slice(0, 120));
+      if (!MOVE_ON_STATUSES.includes(err?.status)) throw err;
+    } finally {
+      if (timer) clearTimeout(timer);
+    }
+  }
+  throw (
+    failures.find((f) => f?.status === 429) ??
+    failures.find((f) => f?.status === 503) ??
+    failures.find((f) => f?.status === 504) ??
+    failures[failures.length - 1] ??
+    new Error('no model available')
+  );
+}
 
 class PublicError extends Error {
   status: number;
@@ -72,7 +107,6 @@ export default async function handler(req: any, res: any) {
     return;
   }
 
-  let timer: ReturnType<typeof setTimeout> | undefined;
   try {
     const prompt = buildPrompt(req.body || {});
 
@@ -82,27 +116,14 @@ export default async function handler(req: any, res: any) {
     }
 
     const ai = new GoogleGenAI({ apiKey });
-    const ask = () =>
-      ai.models.generateContent({
-        model: MODEL,
-        contents: prompt,
-        config: {
-          responseMimeType: 'application/json',
-          responseSchema: SWAP_SCHEMA,
-          thinkingConfig: { thinkingLevel: ThinkingLevel.LOW },
-        },
-      });
-    // Gemini often answers "busy" (503) for a moment, so try once more before giving up
-    const call = ask().catch(async (err: any) => {
-      if (err?.status !== 503) throw err;
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-      return ask();
+    const response: any = await askWithFallback(ai, {
+      contents: prompt,
+      config: {
+        responseMimeType: 'application/json',
+        responseSchema: SWAP_SCHEMA,
+        thinkingConfig: { thinkingLevel: ThinkingLevel.LOW },
+      },
     });
-    const timeout = new Promise<never>((_, reject) => {
-      timer = setTimeout(() => reject(new PublicError(504, 'Gemini took too long to answer.')), TIMEOUT_MS);
-    });
-
-    const response: any = await Promise.race([call, timeout]);
 
     let parsed: any;
     try {
@@ -116,6 +137,8 @@ export default async function handler(req: any, res: any) {
     if (!(err instanceof PublicError)) console.error('cheaper-alternatives failed:', err?.status ?? '', err?.message);
     if (err instanceof PublicError) {
       res.status(err.status).json({ error: err.message });
+    } else if (err?.status === 504) {
+      res.status(504).json({ error: 'Gemini took too long to answer. Please try again.' });
     } else if (err?.status === 429) {
       res.status(429).json({ error: 'Gemini is busy or the free quota is used up. Please try again in a minute.' });
     } else if (err?.status === 503) {
@@ -127,7 +150,5 @@ export default async function handler(req: any, res: any) {
     } else {
       res.status(502).json({ error: 'Could not find swaps right now.' });
     }
-  } finally {
-    if (timer) clearTimeout(timer);
   }
 }

@@ -45,7 +45,7 @@ The app has a built-in list of about 80 common foods with a typical number of da
 2. **Read receipts.** Given a photo or pasted text of a grocery receipt, the AI picks out the vegetarian food items and guesses how long each will last.
 3. **Suggest cheaper swaps.** For an ingredient you type in, the AI suggests cheaper substitutes.
 
-The AI is reached through a small helper that holds a private key. The key is kept out of this GitHub project on purpose. For recipes, the helper waits up to about 40 seconds for Gemini. If the key is missing, or Gemini fails or is too slow, the Recipes screen shows a short message and a **Try again** button. It does not fall back to made-up or pre-written recipes.
+The AI is reached through a small helper that holds a private key. The key is kept out of this GitHub project on purpose. Gemini's free allowance is small and its servers are sometimes busy, so the helper tries up to four different Gemini models in turn (fast, light ones first) and gives up after about 45 seconds. If none of them answers, or the key is missing, the screen shows a short message and a **Try again** button. It never falls back to made-up or pre-written results.
 
 **Where it falls short.**
 

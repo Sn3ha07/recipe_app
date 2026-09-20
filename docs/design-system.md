@@ -64,5 +64,5 @@ Text is usually ink. Quieter text is ink at 55% to 70% strength. Borders are ink
 - [x] Round 1: colors and fonts set app-wide, header, welcome banner
 - [x] Fridge screen
 - [x] Recipes screen and recipe pop-up
-- [ ] Favorites, Shopping List, Budget Swaps
-- [ ] Preferences and Receipt Scanner pop-ups
+- [x] Favorites, Shopping List, Budget Swaps
+- [x] Preferences and Receipt Scanner pop-ups

@@ -48,6 +48,13 @@ const downscaleImage = (file: File, maxSide = 2200, quality = 0.8): Promise<stri
     img.src = url;
   });
 
+// Shared look, from docs/design-system.md
+const LABEL = 'font-mono text-[11px] uppercase tracking-[0.18em] text-ink/55';
+const FIELD = 'w-full px-5 py-3 rounded-full bg-cream/60 ring-1 ring-ink/10 text-sm text-ink placeholder:text-ink/40 focus:outline-none focus:ring-2 focus:ring-ink';
+const PILL_DARK = 'rounded-full bg-ink text-cream font-medium hover:bg-ink-soft transition-colors cursor-pointer';
+const OVERLAY = 'fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-ink/60 backdrop-blur-xs overflow-y-auto';
+const PANEL = 'bg-white rounded-3xl w-full max-h-[90vh] overflow-y-auto shadow-[0_0_0_1px_rgba(33,12,2,0.1),0_24px_60px_-12px_rgba(0,0,0,0.55)] animate-in fade-in zoom-in-95 duration-150';
+
 export const ReceiptScannerModal: React.FC<ReceiptScannerModalProps> = ({
   isOpen,
   onClose,
@@ -186,22 +193,19 @@ TOTAL: $27.94`);
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-stone-900/60 backdrop-blur-xs overflow-y-auto">
-      <div 
-        id="receipt-scanner-modal"
-        className="bg-white rounded-3xl max-w-xl w-full max-h-[90vh] overflow-y-auto shadow-2xl border border-stone-200 animate-in fade-in zoom-in-95 duration-150"
-      >
+    <div className={OVERLAY}>
+      <div id="receipt-scanner-modal" className={`${PANEL} max-w-xl`}>
         {/* Header */}
-        <div className="sticky top-0 bg-white px-6 py-4 border-b border-stone-100 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="p-2 rounded-xl bg-emerald-100 text-emerald-800 font-bold">
+        <div className="sticky top-0 bg-white px-6 py-5 border-b border-ink/10 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-full bg-cream text-ink flex items-center justify-center">
               <ScanLine className="w-5 h-5" />
             </div>
             <div>
-              <h2 className="font-serif font-bold text-lg text-stone-900">
+              <h2 className="text-2xl font-normal tracking-[-0.03em] text-ink">
                 Receipt Scanner
               </h2>
-              <p className="text-xs text-stone-500">
+              <p className="text-xs text-ink/55">
                 Auto-extract vegetarian groceries and estimate shelf-life
               </p>
             </div>
@@ -209,7 +213,7 @@ TOTAL: $27.94`);
 
           <button
             onClick={onClose}
-            className="p-1.5 rounded-xl text-stone-400 hover:text-stone-700 hover:bg-stone-100 transition-colors"
+            className="p-2 rounded-full text-ink/50 hover:text-ink hover:bg-cream transition-colors cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
@@ -217,11 +221,11 @@ TOTAL: $27.94`);
 
         <div className="p-6 space-y-5">
           {/* Mode Switcher */}
-          <div className="flex items-center gap-2 p-1 bg-stone-100 rounded-xl text-xs font-semibold text-stone-600">
+          <div className="flex items-center gap-1 p-1 bg-cream rounded-full text-xs font-medium">
             <button
               onClick={() => setActiveMode('upload')}
-              className={`flex-1 py-2 rounded-lg flex items-center justify-center gap-1.5 transition-all ${
-                activeMode === 'upload' ? 'bg-white text-stone-900 shadow-xs' : 'hover:text-stone-900'
+              className={`flex-1 py-2.5 rounded-full flex items-center justify-center gap-1.5 transition-colors cursor-pointer ${
+                activeMode === 'upload' ? 'bg-ink text-cream' : 'text-ink/70 hover:text-ink'
               }`}
             >
               <Upload className="w-3.5 h-3.5" />
@@ -229,8 +233,8 @@ TOTAL: $27.94`);
             </button>
             <button
               onClick={() => setActiveMode('text')}
-              className={`flex-1 py-2 rounded-lg flex items-center justify-center gap-1.5 transition-all ${
-                activeMode === 'text' ? 'bg-white text-stone-900 shadow-xs' : 'hover:text-stone-900'
+              className={`flex-1 py-2.5 rounded-full flex items-center justify-center gap-1.5 transition-colors cursor-pointer ${
+                activeMode === 'text' ? 'bg-ink text-cream' : 'text-ink/70 hover:text-ink'
               }`}
             >
               <FileText className="w-3.5 h-3.5" />
@@ -250,7 +254,7 @@ TOTAL: $27.94`);
               />
 
               {imagePreview ? (
-                <div className="relative rounded-2xl overflow-hidden border border-stone-200 bg-stone-50 max-h-56 flex items-center justify-center">
+                <div className="relative rounded-3xl overflow-hidden ring-1 ring-ink/10 bg-cream max-h-56 flex items-center justify-center">
                   <img
                     src={imagePreview}
                     alt="Receipt preview"
@@ -261,7 +265,7 @@ TOTAL: $27.94`);
                       setImagePreview(null);
                       if (fileInputRef.current) fileInputRef.current.value = '';
                     }}
-                    className="absolute top-2 right-2 p-1.5 bg-stone-900/80 text-white rounded-lg text-xs"
+                    className="absolute top-3 right-3 px-3 py-1.5 bg-ink/85 hover:bg-ink text-cream rounded-full text-xs font-medium cursor-pointer"
                   >
                     Change photo
                   </button>
@@ -269,15 +273,15 @@ TOTAL: $27.94`);
               ) : (
                 <div
                   onClick={() => fileInputRef.current?.click()}
-                  className="border-2 border-dashed border-stone-300 hover:border-emerald-500 rounded-2xl p-8 text-center cursor-pointer transition-colors bg-stone-50/60 hover:bg-emerald-50/30"
+                  className="border-2 border-dashed border-ink/20 hover:border-ink/50 rounded-3xl p-10 text-center cursor-pointer transition-colors bg-cream/50 hover:bg-cream"
                 >
-                  <div className="w-10 h-10 rounded-xl bg-white border border-stone-200 text-stone-400 mx-auto flex items-center justify-center mb-2">
-                    <Camera className="w-5 h-5 text-emerald-600" />
+                  <div className="w-12 h-12 rounded-full bg-white ring-1 ring-ink/10 mx-auto flex items-center justify-center mb-3">
+                    <Camera className="w-5 h-5 text-ink" />
                   </div>
-                  <p className="text-xs font-semibold text-stone-800">
+                  <p className="text-sm font-medium text-ink">
                     Click to upload receipt photo
                   </p>
-                  <p className="text-[11px] text-stone-500 mt-1">
+                  <p className="text-xs text-ink/55 mt-1">
                     Supports JPG, PNG, WEBP from grocery stores or mobile cameras
                   </p>
                 </div>
@@ -290,13 +294,13 @@ TOTAL: $27.94`);
                 placeholder="Paste receipt text or grocery email confirmation here..."
                 value={textReceipt}
                 onChange={(e) => setTextReceipt(e.target.value)}
-                className="w-full p-3 text-xs rounded-xl border border-stone-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 font-mono"
+                className="w-full p-4 text-xs rounded-3xl bg-cream/60 ring-1 ring-ink/10 text-ink placeholder:text-ink/40 focus:outline-none focus:ring-2 focus:ring-ink font-mono"
               />
               <div className="flex justify-end">
                 <button
                   type="button"
                   onClick={loadSampleReceipt}
-                  className="text-xs text-emerald-700 hover:text-emerald-800 font-semibold underline underline-offset-2 cursor-pointer"
+                  className="text-xs text-ink font-medium hover:underline underline-offset-2 cursor-pointer"
                 >
                   Paste sample grocery receipt
                 </button>
@@ -305,14 +309,14 @@ TOTAL: $27.94`);
           )}
 
           {errorMessage && (
-            <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-xs text-rose-700 flex items-center gap-2">
+            <div className="p-4 rounded-2xl bg-rose-50 ring-1 ring-rose-200 text-xs text-rose-700 flex items-center gap-2">
               <AlertCircle className="w-4 h-4 shrink-0" />
               <span>{errorMessage}</span>
             </div>
           )}
 
           {noItemsFound && extractedItems.length === 0 && (
-            <div className="p-3 rounded-xl bg-stone-100 text-xs text-ink/75">
+            <div className="p-4 rounded-2xl bg-cream text-xs text-ink/75">
               No vegetarian food items were found on this receipt. Try a clearer photo, or paste the item lines as text.
             </div>
           )}
@@ -322,11 +326,11 @@ TOTAL: $27.94`);
             <button
               onClick={handleScan}
               disabled={isScanning || (!imagePreview && !textReceipt.trim())}
-              className="w-full py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white font-semibold text-sm transition-colors flex items-center justify-center gap-2 shadow-xs cursor-pointer"
+              className={`w-full py-3.5 text-sm flex items-center justify-center gap-2 disabled:bg-ink/10 disabled:text-ink/35 disabled:cursor-not-allowed ${PILL_DARK}`}
             >
               {isScanning ? (
                 <>
-                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  <div className="w-4 h-4 border-2 border-cream border-t-transparent rounded-full animate-spin" />
                   <span>Scanning with Gemini Vision...</span>
                 </>
               ) : (
@@ -340,9 +344,9 @@ TOTAL: $27.94`);
 
           {/* Extracted Items Review List */}
           {extractedItems.length > 0 && (
-            <div className="space-y-3 pt-2 border-t border-stone-200">
+            <div className="space-y-4 pt-4 border-t border-ink/10">
               <div className="flex items-center justify-between">
-                <h4 className="font-serif font-bold text-stone-900 text-sm">
+                <h4 className="text-lg font-normal tracking-[-0.02em] text-ink">
                   Extracted Vegetarian Items ({extractedItems.filter((i) => i.selected).length} selected)
                 </h4>
                 <button
@@ -351,42 +355,42 @@ TOTAL: $27.94`);
                     setImagePreview(null);
                     setTextReceipt('');
                   }}
-                  className="text-xs text-stone-500 hover:text-stone-700"
+                  className="text-xs text-ink/55 hover:text-ink cursor-pointer"
                 >
                   Scan another
                 </button>
               </div>
 
-              <div className="space-y-2 max-h-60 overflow-y-auto pr-1">
+              <div className="space-y-2 max-h-64 overflow-y-auto p-1">
                 {extractedItems.map((item, idx) => (
                   <div
                     key={idx}
                     onClick={() => handleToggleItem(idx)}
-                    className={`p-3 rounded-xl border text-xs flex items-center justify-between gap-3 cursor-pointer transition-colors ${
+                    className={`p-4 rounded-2xl text-xs flex items-center justify-between gap-3 cursor-pointer transition-all ${
                       item.selected
-                        ? 'bg-emerald-50/80 border-emerald-300 text-stone-900'
-                        : 'bg-stone-50/50 border-stone-200 text-stone-400 opacity-60'
+                        ? 'bg-white ring-2 ring-ink text-ink'
+                        : 'bg-cream/50 ring-1 ring-ink/10 text-ink/40 opacity-70'
                     }`}
                   >
-                    <div className="flex items-start gap-2.5">
+                    <div className="flex items-start gap-3">
                       <div
-                        className={`w-4 h-4 rounded border mt-0.5 flex items-center justify-center shrink-0 ${
-                          item.selected ? 'bg-emerald-600 border-emerald-600 text-white' : 'border-stone-300'
+                        className={`w-5 h-5 rounded-full mt-0.5 flex items-center justify-center shrink-0 ${
+                          item.selected ? 'bg-ink text-cream' : 'ring-1 ring-ink/25'
                         }`}
                       >
                         {item.selected && <Check className="w-3 h-3" />}
                       </div>
                       <div>
-                        <div className="font-semibold text-stone-900">{item.name}</div>
-                        <div className="text-[11px] text-stone-500">
+                        <div className="font-semibold text-sm text-ink">{item.name}</div>
+                        <div className="text-[11px] text-ink/55 mt-0.5">
                           Qty: {item.quantity} • {item.storageTip}
                         </div>
                       </div>
                     </div>
 
                     <div className="text-right shrink-0">
-                      <span className="inline-flex items-center gap-1 text-[11px] font-semibold px-2 py-0.5 rounded-full bg-stone-100 text-stone-700">
-                        <Clock className="w-3 h-3 text-emerald-600" />
+                      <span className="inline-flex items-center gap-1 font-mono text-[11px] px-2.5 py-1 rounded-full bg-cream text-ink/70">
+                        <Clock className="w-3 h-3 text-ink/50" />
                         ~{item.estimatedShelfLifeDays}d
                       </span>
                     </div>
@@ -397,7 +401,7 @@ TOTAL: $27.94`);
               <button
                 onClick={handleAddSelected}
                 disabled={extractedItems.filter((i) => i.selected).length === 0}
-                className="w-full py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white font-semibold text-sm transition-colors flex items-center justify-center gap-2 shadow-xs cursor-pointer"
+                className={`w-full py-3.5 text-sm flex items-center justify-center gap-2 disabled:bg-ink/10 disabled:text-ink/35 disabled:cursor-not-allowed ${PILL_DARK}`}
               >
                 <Refrigerator className="w-4 h-4" />
                 <span>Add Selected ({extractedItems.filter((i) => i.selected).length}) to Virtual Fridge</span>

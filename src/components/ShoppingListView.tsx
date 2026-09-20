@@ -22,6 +22,12 @@ interface ShoppingListViewProps {
   onClearCompleted: () => void;
 }
 
+// Shared look, from docs/design-system.md
+const CARD = 'bg-white rounded-3xl ring-1 ring-ink/10 shadow-[0_1px_3px_rgba(0,0,0,0.08)]';
+const LABEL = 'font-mono text-[11px] uppercase tracking-[0.18em] text-ink/55';
+const FIELD = 'w-full px-5 py-3 rounded-full bg-cream/60 ring-1 ring-ink/10 text-sm text-ink placeholder:text-ink/40 focus:outline-none focus:ring-2 focus:ring-ink';
+const PILL_DARK = 'rounded-full bg-ink text-cream font-medium hover:bg-ink-soft transition-colors cursor-pointer';
+
 export const ShoppingListView: React.FC<ShoppingListViewProps> = ({
   items,
   onToggleItem,
@@ -59,19 +65,19 @@ export const ShoppingListView: React.FC<ShoppingListViewProps> = ({
   };
 
   return (
-    <div id="shopping-list-view" className="space-y-6">
+    <div id="shopping-list-view" className="space-y-8">
       {/* Header & Quick Action */}
-      <div className="bg-white border border-stone-200/90 rounded-2xl p-5 sm:p-6 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className={`${CARD} p-6 sm:p-7 flex flex-col sm:flex-row sm:items-center justify-between gap-4`}>
         <div>
-          <div className="flex items-center gap-2">
-            <div className="p-1.5 rounded-lg bg-emerald-100 text-emerald-800">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-full bg-cream text-ink flex items-center justify-center">
               <ShoppingCart className="w-4 h-4" />
             </div>
-            <h2 className="font-serif font-bold text-stone-900 text-xl">
+            <h2 className="text-3xl font-normal tracking-[-0.03em] text-ink">
               Smart Shopping List ({uncheckedCount} remaining)
             </h2>
           </div>
-          <p className="text-xs sm:text-sm text-stone-600 mt-1">
+          <p className="text-sm text-ink/60 mt-3">
             Generated from recipes and manual staples. Cross off items as you shop!
           </p>
         </div>
@@ -80,7 +86,7 @@ export const ShoppingListView: React.FC<ShoppingListViewProps> = ({
           <div className="flex items-center gap-2">
             <button
               onClick={handleTransferToFridge}
-              className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs transition-colors flex items-center gap-1.5 shadow-xs cursor-pointer"
+              className={`px-5 py-3 text-sm flex items-center gap-1.5 ${PILL_DARK}`}
             >
               <Refrigerator className="w-4 h-4" />
               <span>Transfer {checkedCount} Bought to Fridge</span>
@@ -88,7 +94,7 @@ export const ShoppingListView: React.FC<ShoppingListViewProps> = ({
 
             <button
               onClick={onClearCompleted}
-              className="px-3 py-2 rounded-xl bg-stone-100 hover:bg-stone-200 text-stone-600 text-xs font-medium transition-colors cursor-pointer"
+              className="px-4 py-3 rounded-full bg-white text-ink/75 ring-1 ring-ink/10 hover:bg-cream text-sm font-medium transition-colors cursor-pointer"
             >
               Clear Checked
             </button>
@@ -97,15 +103,15 @@ export const ShoppingListView: React.FC<ShoppingListViewProps> = ({
       </div>
 
       {/* Manual Add Form */}
-      <form onSubmit={handleManualAdd} className="bg-white border border-stone-200 rounded-2xl p-4 shadow-xs">
-        <div className="grid grid-cols-1 sm:grid-cols-12 gap-2.5">
+      <form onSubmit={handleManualAdd} className={`${CARD} p-5`}>
+        <div className="grid grid-cols-1 sm:grid-cols-12 gap-3">
           <div className="sm:col-span-6">
             <input
               type="text"
               placeholder="Add item e.g. Nutritional yeast, Coconut milk, Oat flour..."
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="w-full px-3.5 py-2 text-xs rounded-xl border border-stone-300 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              className={FIELD}
               required
             />
           </div>
@@ -116,7 +122,7 @@ export const ShoppingListView: React.FC<ShoppingListViewProps> = ({
               placeholder="Qty (e.g. 1 can, 500g)"
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
-              className="w-full px-3.5 py-2 text-xs rounded-xl border border-stone-300 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              className={FIELD}
             />
           </div>
 
@@ -124,7 +130,7 @@ export const ShoppingListView: React.FC<ShoppingListViewProps> = ({
             <select
               value={category}
               onChange={(e) => setCategory(e.target.value as any)}
-              className="w-full px-3 py-2 text-xs rounded-xl border border-stone-300 bg-white focus:outline-none focus:ring-1 focus:ring-emerald-500"
+              className="w-full px-4 py-3 text-sm rounded-full bg-cream/60 ring-1 ring-ink/10 text-ink focus:outline-none focus:ring-2 focus:ring-ink"
             >
               <option value="produce">Produce</option>
               <option value="protein">Veg Protein</option>
@@ -138,7 +144,8 @@ export const ShoppingListView: React.FC<ShoppingListViewProps> = ({
             <button
               type="submit"
               disabled={!name.trim()}
-              className="px-4 py-2 rounded-xl bg-stone-900 hover:bg-stone-800 disabled:opacity-40 text-white font-semibold text-xs flex items-center justify-center shrink-0 cursor-pointer"
+              className={`px-4 py-3 flex items-center justify-center shrink-0 disabled:bg-ink/10 disabled:text-ink/35 disabled:cursor-not-allowed ${PILL_DARK}`}
+              title="Add item"
             >
               <Plus className="w-4 h-4" />
             </button>
@@ -148,59 +155,59 @@ export const ShoppingListView: React.FC<ShoppingListViewProps> = ({
 
       {/* Items List */}
       {items.length === 0 ? (
-        <div className="bg-white border border-dashed border-stone-300 rounded-2xl p-10 text-center">
-          <div className="w-12 h-12 rounded-2xl bg-stone-100 text-stone-400 mx-auto flex items-center justify-center mb-3">
+        <div className="bg-white/60 border border-dashed border-ink/20 rounded-3xl p-12 text-center">
+          <div className="w-12 h-12 rounded-full bg-cream text-ink/40 mx-auto flex items-center justify-center mb-4">
             <ShoppingCart className="w-6 h-6 stroke-[1.5]" />
           </div>
-          <h3 className="font-serif font-bold text-stone-800 text-base">Your shopping list is clear</h3>
-          <p className="text-xs text-stone-500 mt-1 max-w-sm mx-auto">
+          <h3 className="text-xl font-normal tracking-[-0.02em] text-ink">Your shopping list is clear</h3>
+          <p className="text-sm text-ink/60 mt-2 max-w-sm mx-auto">
             Add items manually or click "Add to Shopping List" from any recipe you want to make!
           </p>
         </div>
       ) : (
-        <div className="bg-white border border-stone-200 rounded-2xl divide-y divide-stone-100 shadow-xs overflow-hidden">
+        <div className={`${CARD} divide-y divide-ink/10 overflow-hidden`}>
           {items.map((item) => (
             <div
               key={item.id}
-              className={`p-3.5 sm:p-4 flex items-start justify-between gap-3 transition-colors ${
-                item.isChecked ? 'bg-stone-50/70 opacity-60' : 'hover:bg-stone-50/40'
+              className={`p-4 sm:p-5 flex items-start justify-between gap-3 transition-colors ${
+                item.isChecked ? 'bg-cream/60 opacity-60' : 'hover:bg-cream/40'
               }`}
             >
               <div className="flex items-start gap-3 flex-1">
                 <button
                   onClick={() => onToggleItem(item.id)}
-                  className="mt-0.5 text-emerald-600 hover:text-emerald-700 cursor-pointer shrink-0"
+                  className="mt-0.5 cursor-pointer shrink-0"
                 >
                   {item.isChecked ? (
-                    <CheckSquare className="w-5 h-5 fill-emerald-100" />
+                    <CheckSquare className="w-5 h-5 text-ink" />
                   ) : (
-                    <Square className="w-5 h-5 text-stone-400" />
+                    <Square className="w-5 h-5 text-ink/35" />
                   )}
                 </button>
 
                 <div>
-                  <div className="flex items-center gap-2">
+                  <div className="flex flex-wrap items-center gap-2">
                     <span
-                      className={`text-sm font-semibold ${
-                        item.isChecked ? 'line-through text-stone-400' : 'text-stone-900'
+                      className={`text-base font-medium ${
+                        item.isChecked ? 'line-through text-ink/40' : 'text-ink'
                       }`}
                     >
                       {item.name}
                     </span>
-                    <span className="text-xs font-mono text-stone-500 bg-stone-100 px-2 py-0.5 rounded-md">
+                    <span className="font-mono text-[11px] text-ink/60 bg-cream px-2 py-0.5 rounded-full">
                       {item.amount}
                     </span>
                   </div>
 
                   {item.recipeSource && (
-                    <p className="text-[11px] text-stone-400 mt-0.5">
+                    <p className="text-[11px] text-ink/45 mt-0.5">
                       For: {item.recipeSource}
                     </p>
                   )}
 
                   {/* Cheaper alternative tip on shopping list */}
                   {item.cheaperSwapSuggestion && (
-                    <div className="mt-1.5 flex items-center gap-1.5 text-[11px] text-amber-900 bg-amber-50/80 px-2.5 py-1 rounded-lg border border-amber-200/60 max-w-fit">
+                    <div className="mt-2 flex items-center gap-1.5 text-[11px] text-ink bg-amber-50 ring-1 ring-amber-200 px-3 py-1 rounded-full max-w-fit">
                       <Coins className="w-3.5 h-3.5 text-amber-600 shrink-0" />
                       <span>Budget Tip: {item.cheaperSwapSuggestion}</span>
                     </div>
@@ -210,7 +217,7 @@ export const ShoppingListView: React.FC<ShoppingListViewProps> = ({
 
               <button
                 onClick={() => onDeleteItem(item.id)}
-                className="text-stone-300 hover:text-rose-600 p-1 transition-colors cursor-pointer"
+                className="text-ink/35 hover:text-brand-red hover:bg-brand-red/10 p-2 rounded-full transition-colors cursor-pointer"
                 title="Remove item"
               >
                 <Trash2 className="w-4 h-4" />

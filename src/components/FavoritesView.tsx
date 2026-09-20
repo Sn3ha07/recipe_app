@@ -19,6 +19,12 @@ interface FavoritesViewProps {
   onExploreRecipe: (query: string) => void;
 }
 
+// Shared look, from docs/design-system.md
+const CARD = 'bg-white rounded-3xl ring-1 ring-ink/10 shadow-[0_1px_3px_rgba(0,0,0,0.08)]';
+const LABEL = 'font-mono text-[11px] uppercase tracking-[0.18em] text-ink/55';
+const FIELD = 'w-full px-5 py-3 rounded-full bg-cream/60 ring-1 ring-ink/10 text-sm text-ink placeholder:text-ink/40 focus:outline-none focus:ring-2 focus:ring-ink';
+const PILL_DARK = 'rounded-full bg-ink text-cream font-medium hover:bg-ink-soft transition-colors cursor-pointer';
+
 export const FavoritesView: React.FC<FavoritesViewProps> = ({
   favorites,
   onRemoveFavorite,
@@ -28,30 +34,28 @@ export const FavoritesView: React.FC<FavoritesViewProps> = ({
   const [selectedRecipe, setSelectedRecipe] = useState<Recipe | null>(null);
 
   return (
-    <div id="favorites-view" className="space-y-6">
-      <div className="bg-white border border-stone-200/90 rounded-2xl p-5 sm:p-6 shadow-xs flex items-center justify-between">
-        <div>
-          <div className="flex items-center gap-2">
-            <div className="p-1.5 rounded-lg bg-amber-100 text-amber-900">
-              <Bookmark className="w-4 h-4" />
-            </div>
-            <h2 className="font-serif font-bold text-stone-900 text-xl">
-              Saved Favorite Recipes ({favorites.length})
-            </h2>
+    <div id="favorites-view" className="space-y-8">
+      <div className={`${CARD} p-6 sm:p-7`}>
+        <div className="flex items-center gap-3">
+          <div className="w-9 h-9 rounded-full bg-cream text-ink flex items-center justify-center">
+            <Bookmark className="w-4 h-4" />
           </div>
-          <p className="text-xs sm:text-sm text-stone-600 mt-1">
-            Access your curated collection of delicious vegetarian recipes anytime.
-          </p>
+          <h2 className="text-3xl font-normal tracking-[-0.03em] text-ink">
+            Saved Favorite Recipes ({favorites.length})
+          </h2>
         </div>
+        <p className="text-sm text-ink/60 mt-3">
+          Access your curated collection of delicious vegetarian recipes anytime.
+        </p>
       </div>
 
       {favorites.length === 0 ? (
-        <div className="bg-white border border-dashed border-stone-300 rounded-2xl p-12 text-center">
-          <div className="w-12 h-12 rounded-2xl bg-amber-50 text-amber-700 mx-auto flex items-center justify-center mb-3">
+        <div className="bg-white/60 border border-dashed border-ink/20 rounded-3xl p-12 text-center">
+          <div className="w-12 h-12 rounded-full bg-cream text-ink/40 mx-auto flex items-center justify-center mb-4">
             <Bookmark className="w-6 h-6 stroke-[1.5]" />
           </div>
-          <h3 className="font-serif font-bold text-stone-900 text-base">No saved recipes yet</h3>
-          <p className="text-xs text-stone-500 mt-1 max-w-sm mx-auto">
+          <h3 className="text-xl font-normal tracking-[-0.02em] text-ink">No saved recipes yet</h3>
+          <p className="text-sm text-ink/60 mt-2 max-w-sm mx-auto">
             When you find a vegetarian dish you love in the Recipes tab, tap the bookmark icon to save it here!
           </p>
         </div>
@@ -62,32 +66,32 @@ export const FavoritesView: React.FC<FavoritesViewProps> = ({
             return (
               <div
                 key={recipe.id}
-                className="bg-white border border-stone-200 hover:border-amber-300 rounded-3xl p-5 shadow-xs hover:shadow-md transition-all flex flex-col justify-between"
+                className="bg-white ring-1 ring-ink/10 hover:ring-ink/25 rounded-3xl p-6 shadow-[0_1px_3px_rgba(0,0,0,0.08)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.12)] transition-all flex flex-col justify-between"
               >
                 <div>
-                  <div className="flex items-center justify-between gap-2 mb-2">
-                    <span className="text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-900">
+                  <div className="flex items-center justify-between gap-2 mb-3">
+                    <span className="font-mono text-[10px] uppercase tracking-[0.14em] px-2.5 py-1 rounded-full bg-sky text-ink">
                       {recipe.cuisine}
                     </span>
                     <button
                       onClick={() => onRemoveFavorite(recipe.id)}
-                      className="text-stone-400 hover:text-rose-600 transition-colors p-1"
+                      className="text-ink/40 hover:text-brand-red hover:bg-brand-red/10 transition-colors p-2 rounded-full cursor-pointer"
                       title="Remove from favorites"
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>
                   </div>
 
-                  <h3 className="font-serif font-bold text-stone-900 text-lg leading-snug">
+                  <h3 className="text-2xl font-normal tracking-[-0.03em] leading-tight text-ink">
                     {recipe.title}
                   </h3>
-                  <p className="text-xs text-stone-600 mt-1 line-clamp-2 leading-relaxed">
+                  <p className="text-sm text-ink/65 mt-2 line-clamp-2 leading-relaxed">
                     {recipe.description}
                   </p>
 
-                  <div className="flex items-center gap-3 mt-3 text-xs text-stone-500">
+                  <div className="flex items-center gap-3 mt-4 text-xs text-ink/55">
                     <span className="flex items-center gap-1">
-                      <Clock className="w-3.5 h-3.5" />
+                      <Clock className="w-3.5 h-3.5 text-ink/40" />
                       {totalMins}m
                     </span>
                     <span>•</span>
@@ -97,8 +101,8 @@ export const FavoritesView: React.FC<FavoritesViewProps> = ({
                   </div>
 
                   {recipe.additionalIngredientsNeeded && recipe.additionalIngredientsNeeded.length > 0 && (
-                    <div className="mt-3 pt-2 border-t border-stone-100 flex items-center justify-between text-xs">
-                      <span className="text-[11px] text-stone-500">
+                    <div className="mt-4 pt-3 border-t border-ink/10 flex items-center justify-between text-xs">
+                      <span className="text-[11px] text-ink/55">
                         {recipe.additionalIngredientsNeeded.length} extra ingredients
                       </span>
                       <button
@@ -109,7 +113,7 @@ export const FavoritesView: React.FC<FavoritesViewProps> = ({
                           }));
                           onAddToShoppingList(items);
                         }}
-                        className="text-[11px] font-semibold text-emerald-700 hover:text-emerald-800 flex items-center gap-1 cursor-pointer"
+                        className="text-[11px] font-medium text-ink hover:underline underline-offset-2 flex items-center gap-1 cursor-pointer"
                       >
                         <ShoppingCart className="w-3 h-3" />
                         <span>Add to List</span>
@@ -118,10 +122,10 @@ export const FavoritesView: React.FC<FavoritesViewProps> = ({
                   )}
                 </div>
 
-                <div className="mt-4 pt-3 border-t border-stone-100 flex items-center justify-end">
+                <div className="mt-6 pt-4 border-t border-ink/10 flex items-center justify-end">
                   <button
                     onClick={() => setSelectedRecipe(recipe)}
-                    className="px-3.5 py-1.5 rounded-xl bg-stone-900 hover:bg-stone-800 text-white text-xs font-semibold flex items-center gap-1 cursor-pointer"
+                    className={`px-4 py-2 text-xs flex items-center gap-1 ${PILL_DARK}`}
                   >
                     <span>Cook This</span>
                     <ArrowRight className="w-3 h-3" />

@@ -1,1 +1,51 @@
 @import "tailwindcss";
+
+/* Design rules: see docs/design-system.md */
+@theme {
+  --font-sans: "Inter Tight", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-serif: "Inter Tight", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: "Fragment Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+
+  --color-cream: #F0EBE2;
+  --color-ink: #210C02;
+  --color-ink-soft: #3A1D12;
+  --color-brand-red: #C42121;
+  --color-sand: #E1D8C4;
+  --color-sky: #D3E6FF;
+
+  /* Warm neutrals: the "stone" scale now runs from cream to ink */
+  --color-stone-50: #F7F4EE;
+  --color-stone-100: #F0EBE2;
+  --color-stone-200: #E4DCCB;
+  --color-stone-300: #D2C7B1;
+  --color-stone-400: #A89C89;
+  --color-stone-500: #6F6154;
+  --color-stone-600: #5A4A3E;
+  --color-stone-700: #43302A;
+  --color-stone-800: #3A1D12;
+  --color-stone-900: #210C02;
+  --color-stone-950: #170801;
+
+  /* Softened green for "fresh" and other positive states */
+  --color-emerald-50: #EEF2E6;
+  --color-emerald-100: #DDE7CF;
+  --color-emerald-200: #C3D5AE;
+  --color-emerald-300: #A3BC86;
+  --color-emerald-400: #7F9E5C;
+  --color-emerald-500: #5F8340;
+  --color-emerald-600: #4C6B33;
+  --color-emerald-700: #3D5629;
+  --color-emerald-800: #31441F;
+  --color-emerald-900: #263518;
+  --color-emerald-950: #17210E;
+}
+
+@layer base {
+  body {
+    font-family: var(--font-sans);
+  }
+
+  h1, h2, h3, h4 {
+    letter-spacing: -0.025em;
+  }
+}

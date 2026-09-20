@@ -36,8 +36,8 @@ interface FridgeViewProps {
 
 // Shared look, from docs/design-system.md
 const CARD = 'bg-white rounded-3xl ring-1 ring-ink/10 shadow-[0_1px_3px_rgba(0,0,0,0.08)]';
-const LABEL = 'font-mono text-[11px] uppercase tracking-[0.18em] text-ink/55';
-const FIELD = 'w-full px-5 py-3 rounded-full bg-cream/60 ring-1 ring-ink/10 text-sm text-ink placeholder:text-ink/40 focus:outline-none focus:ring-2 focus:ring-ink';
+const LABEL = 'font-mono text-xs uppercase tracking-[0.18em] text-ink/65';
+const FIELD = 'w-full px-5 py-3 rounded-full bg-cream/60 ring-1 ring-ink/10 text-sm text-ink placeholder:text-ink/60 focus:outline-none focus:ring-2 focus:ring-ink';
 const PILL_DARK = 'rounded-full bg-ink text-cream font-medium hover:bg-ink-soft transition-colors cursor-pointer';
 
 export const FridgeView: React.FC<FridgeViewProps> = ({
@@ -148,7 +148,7 @@ export const FridgeView: React.FC<FridgeViewProps> = ({
   };
 
   return (
-    <div id="fridge-view" className="space-y-8">
+    <div id="fridge-view" className={`space-y-8 ${selectedForCooking.length > 0 ? 'pb-40 sm:pb-28' : ''}`}>
       {/* 1. Urgent Expiry Reminder Banner (Food Waste Prevention) */}
       {urgentItems.length > 0 && (
         <div id="urgent-expiry-banner" className="bg-amber-50 ring-1 ring-amber-200 rounded-3xl p-6 sm:p-7">
@@ -162,11 +162,11 @@ export const FridgeView: React.FC<FridgeViewProps> = ({
                   <h3 className="text-2xl font-normal tracking-[-0.03em] text-ink">
                     {urgentItems.length === 1 ? '1 item needs using!' : `${urgentItems.length} items need using soon!`}
                   </h3>
-                  <span className="font-mono text-[10px] uppercase tracking-[0.18em] px-2.5 py-1 bg-amber-200 text-amber-900 rounded-full">
+                  <span className="font-mono text-xs uppercase tracking-[0.18em] px-2.5 py-1 bg-amber-200 text-amber-900 rounded-full">
                     Rescue Alert
                   </span>
                 </div>
-                <p className="text-sm text-ink/70 mt-2">
+                <p className="hidden sm:block text-sm text-ink/70 mt-2">
                   Cook with these within 1–3 days to prevent food waste and save your grocery money.
                 </p>
                 <div className="flex flex-wrap gap-2 mt-4">
@@ -176,7 +176,7 @@ export const FridgeView: React.FC<FridgeViewProps> = ({
                       className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-white text-ink ring-1 ring-amber-200"
                     >
                       <span className="font-semibold">{item.name}</span>
-                      <span className="text-[11px] text-ink/60">({item.daysLeft <= 0 ? 'Today' : `${item.daysLeft}d left`})</span>
+                      <span className="text-xs text-ink/60">({item.daysLeft <= 0 ? 'Today' : `${item.daysLeft}d left`})</span>
                     </span>
                   ))}
                 </div>
@@ -186,10 +186,10 @@ export const FridgeView: React.FC<FridgeViewProps> = ({
             <button
               id="btn-cook-expiring"
               onClick={onCookWithExpiring}
-              className={`inline-flex items-center justify-center gap-2 px-6 py-3 text-sm shrink-0 ${PILL_DARK}`}
+              className={`inline-flex items-center justify-center gap-2 px-6 min-h-11 text-sm shrink-0 ${PILL_DARK}`}
             >
               <Flame className="w-4 h-4 text-amber-400 fill-amber-400" />
-              <span>Cook With These Now</span>
+              <span>Get Recipes for These</span>
             </button>
           </div>
         </div>
@@ -206,7 +206,7 @@ export const FridgeView: React.FC<FridgeViewProps> = ({
               Add To Virtual Fridge
             </h2>
           </div>
-          <span className="font-mono text-[11px] uppercase tracking-[0.14em] text-ink/55 hidden sm:inline-flex items-center gap-1.5">
+          <span className="font-mono text-xs uppercase tracking-[0.14em] text-ink/65 hidden sm:inline-flex items-center gap-1.5">
             <Sparkles className="w-3.5 h-3.5 text-emerald-700" />
             Automatic expiry calculated instantly
           </span>
@@ -223,7 +223,7 @@ export const FridgeView: React.FC<FridgeViewProps> = ({
                 type="text"
                 value={inputName}
                 onChange={(e) => setInputName(e.target.value)}
-                placeholder="e.g. Baby Spinach, Firm Tofu, Carrots, Greek Yogurt..."
+                placeholder="e.g. Baby Spinach"
                 className={FIELD}
                 required
               />
@@ -238,7 +238,7 @@ export const FridgeView: React.FC<FridgeViewProps> = ({
                 type="text"
                 value={inputQuantity}
                 onChange={(e) => setInputQuantity(e.target.value)}
-                placeholder="e.g. 1 bunch, 400g, 2 whole"
+                placeholder="e.g. 400g"
                 className={FIELD}
               />
             </div>
@@ -308,7 +308,7 @@ export const FridgeView: React.FC<FridgeViewProps> = ({
             placeholder="Search ingredients in fridge..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-12 pr-5 py-3 rounded-full bg-white ring-1 ring-ink/10 text-sm text-ink placeholder:text-ink/40 focus:outline-none focus:ring-2 focus:ring-ink"
+            className="w-full pl-12 pr-5 py-3 rounded-full bg-white ring-1 ring-ink/10 text-sm text-ink placeholder:text-ink/60 focus:outline-none focus:ring-2 focus:ring-ink"
           />
         </div>
 
@@ -316,7 +316,7 @@ export const FridgeView: React.FC<FridgeViewProps> = ({
         <div className="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0">
           <button
             onClick={() => setOnlyExpiring(!onlyExpiring)}
-            className={`px-4 py-2 rounded-full text-xs font-medium transition-colors flex items-center gap-1.5 shrink-0 cursor-pointer ${
+            className={`px-4 min-h-11 md:min-h-10 rounded-full text-xs font-medium transition-colors flex items-center gap-1.5 shrink-0 cursor-pointer ${
               onlyExpiring
                 ? 'bg-ink text-cream'
                 : 'bg-white text-ink/75 ring-1 ring-ink/10 hover:bg-cream'
@@ -329,7 +329,8 @@ export const FridgeView: React.FC<FridgeViewProps> = ({
           <select
             value={selectedCategory}
             onChange={(e) => setSelectedCategory(e.target.value as any)}
-            className="px-4 py-2 rounded-full text-xs font-medium bg-white text-ink/75 ring-1 ring-ink/10 focus:outline-none focus:ring-2 focus:ring-ink shrink-0"
+            aria-label="Filter by category"
+            className="px-4 min-h-11 md:min-h-10 rounded-full text-xs font-medium bg-white text-ink/75 ring-1 ring-ink/10 focus:outline-none focus:ring-2 focus:ring-ink shrink-0"
           >
             <option value="all">All Categories</option>
             <option value="produce">Fresh Produce</option>
@@ -354,12 +355,12 @@ export const FridgeView: React.FC<FridgeViewProps> = ({
 
       {/* Active Selected Ingredients to Cook Bar */}
       {selectedForCooking.length > 0 && (
-        <div className="p-5 bg-ink text-cream rounded-3xl flex flex-col sm:flex-row items-center justify-between gap-4 animate-in fade-in">
-          <div className="flex items-center gap-4">
-            <div className="w-10 h-10 rounded-full bg-cream/15 flex items-center justify-center font-mono text-sm">
+        <div id="selection-bar" className="fixed bottom-4 inset-x-4 z-40 mx-auto max-w-3xl p-4 sm:p-5 bg-ink text-cream rounded-3xl shadow-[0_8px_24px_rgba(0,0,0,0.35)] flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 sm:gap-4 animate-in fade-in slide-in-from-bottom-2">
+          <div className="flex items-center gap-4 min-w-0">
+            <div className="w-10 h-10 shrink-0 rounded-full bg-cream/15 flex items-center justify-center font-mono text-sm">
               {selectedForCooking.length}
             </div>
-            <div>
+            <div className="min-w-0">
               <p className="text-sm font-medium">Selected ingredients to cook with:</p>
               <p className="text-xs text-cream/70 line-clamp-1">{selectedForCooking.join(', ')}</p>
             </div>
@@ -368,17 +369,17 @@ export const FridgeView: React.FC<FridgeViewProps> = ({
             <button
               type="button"
               onClick={() => setSelectedForCooking([])}
-              className="px-4 py-2 rounded-full bg-cream/10 hover:bg-cream/20 text-xs font-medium cursor-pointer transition-colors"
+              className="min-h-11 px-5 rounded-full bg-cream/10 hover:bg-cream/20 text-xs font-medium cursor-pointer transition-colors"
             >
               Clear
             </button>
             <button
               type="button"
               onClick={() => onCookWithIngredient(selectedForCooking)}
-              className="px-5 py-2.5 rounded-full bg-cream text-ink hover:bg-white text-xs font-medium cursor-pointer flex items-center gap-1.5 transition-colors"
+              className="flex-1 sm:flex-none min-h-11 px-5 justify-center rounded-full bg-cream text-ink hover:bg-white text-xs font-medium cursor-pointer flex items-center gap-1.5 transition-colors"
             >
               <UtensilsCrossed className="w-4 h-4" />
-              <span>Find Recipes for Selected ({selectedForCooking.length})</span>
+              <span>Get Recipes for Selected ({selectedForCooking.length})</span>
             </button>
           </div>
         </div>
@@ -422,11 +423,11 @@ export const FridgeView: React.FC<FridgeViewProps> = ({
                 <div>
                   {/* Top row: Category badge & Expiry Status */}
                   <div className="flex items-center justify-between gap-2 mb-3">
-                    <span className={`text-[11px] font-medium px-2.5 py-0.5 rounded-full ${catBadge.color}`}>
+                    <span className={`text-xs font-medium px-2.5 py-0.5 rounded-full ${catBadge.color}`}>
                       {catBadge.label}
                     </span>
 
-                    <span className={`text-[11px] font-semibold px-2.5 py-0.5 rounded-full border flex items-center gap-1.5 ${item.statusInfo.badgeClass}`}>
+                    <span className={`text-xs font-semibold px-2.5 py-0.5 rounded-full border flex items-center gap-1.5 ${item.statusInfo.badgeClass}`}>
                       <span className={`w-1.5 h-1.5 rounded-full ${item.statusInfo.dotColor}`}></span>
                       {item.statusInfo.label}
                     </span>
@@ -457,7 +458,7 @@ export const FridgeView: React.FC<FridgeViewProps> = ({
                     <button
                       type="button"
                       onClick={() => toggleSelectForCooking(item.name)}
-                      className={`px-3.5 py-1.5 rounded-full text-xs font-medium flex items-center gap-1 transition-colors cursor-pointer ${
+                      className={`min-h-11 px-4 rounded-full text-xs font-medium flex items-center gap-1 transition-colors cursor-pointer ${
                         isSelected
                           ? 'bg-ink text-cream'
                           : 'bg-white text-ink/70 ring-1 ring-ink/15 hover:bg-cream'
@@ -470,18 +471,19 @@ export const FridgeView: React.FC<FridgeViewProps> = ({
                     <button
                       type="button"
                       onClick={() => onCookWithIngredient(item.name)}
-                      className="inline-flex items-center gap-1.5 text-ink font-medium hover:underline underline-offset-2 transition-colors cursor-pointer py-1"
+                      className="inline-flex items-center gap-1.5 text-ink font-medium hover:underline underline-offset-2 transition-colors cursor-pointer min-h-11 px-1"
                     >
                       <UtensilsCrossed className="w-3.5 h-3.5" />
-                      <span>Find recipes</span>
+                      <span>Get recipes</span>
                     </button>
                   </div>
 
                   <button
                     type="button"
                     onClick={() => onDeleteItem(item.id)}
-                    className="text-ink/35 hover:text-brand-red transition-colors p-2 rounded-full hover:bg-brand-red/10 cursor-pointer"
+                    className="text-ink/45 hover:text-brand-red transition-colors w-11 h-11 shrink-0 flex items-center justify-center rounded-full hover:bg-brand-red/10 cursor-pointer"
                     title="Remove item"
+                    aria-label={`Remove ${item.name}`}
                   >
                     <Trash2 className="w-3.5 h-3.5" />
                   </button>

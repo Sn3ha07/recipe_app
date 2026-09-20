@@ -24,8 +24,8 @@ interface ShoppingListViewProps {
 
 // Shared look, from docs/design-system.md
 const CARD = 'bg-white rounded-3xl ring-1 ring-ink/10 shadow-[0_1px_3px_rgba(0,0,0,0.08)]';
-const LABEL = 'font-mono text-[11px] uppercase tracking-[0.18em] text-ink/55';
-const FIELD = 'w-full px-5 py-3 rounded-full bg-cream/60 ring-1 ring-ink/10 text-sm text-ink placeholder:text-ink/40 focus:outline-none focus:ring-2 focus:ring-ink';
+const LABEL = 'font-mono text-xs uppercase tracking-[0.18em] text-ink/65';
+const FIELD = 'w-full px-5 py-3 rounded-full bg-cream/60 ring-1 ring-ink/10 text-sm text-ink placeholder:text-ink/60 focus:outline-none focus:ring-2 focus:ring-ink';
 const PILL_DARK = 'rounded-full bg-ink text-cream font-medium hover:bg-ink-soft transition-colors cursor-pointer';
 
 export const ShoppingListView: React.FC<ShoppingListViewProps> = ({
@@ -78,7 +78,7 @@ export const ShoppingListView: React.FC<ShoppingListViewProps> = ({
             </h2>
           </div>
           <p className="text-sm text-ink/60 mt-3">
-            Generated from recipes and manual staples. Cross off items as you shop!
+            Generated from recipes and manual staples. Tick items off as you shop!
           </p>
         </div>
 
@@ -86,7 +86,7 @@ export const ShoppingListView: React.FC<ShoppingListViewProps> = ({
           <div className="flex items-center gap-2">
             <button
               onClick={handleTransferToFridge}
-              className={`px-5 py-3 text-sm flex items-center gap-1.5 ${PILL_DARK}`}
+              className={`px-5 min-h-11 text-sm flex items-center gap-1.5 ${PILL_DARK}`}
             >
               <Refrigerator className="w-4 h-4" />
               <span>Transfer {checkedCount} Bought to Fridge</span>
@@ -94,7 +94,7 @@ export const ShoppingListView: React.FC<ShoppingListViewProps> = ({
 
             <button
               onClick={onClearCompleted}
-              className="px-4 py-3 rounded-full bg-white text-ink/75 ring-1 ring-ink/10 hover:bg-cream text-sm font-medium transition-colors cursor-pointer"
+              className="px-4 min-h-11 rounded-full bg-white text-ink/75 ring-1 ring-ink/10 hover:bg-cream text-sm font-medium transition-colors cursor-pointer"
             >
               Clear Checked
             </button>
@@ -106,9 +106,11 @@ export const ShoppingListView: React.FC<ShoppingListViewProps> = ({
       <form onSubmit={handleManualAdd} className={`${CARD} p-5`}>
         <div className="grid grid-cols-1 sm:grid-cols-12 gap-3">
           <div className="sm:col-span-6">
+            <label htmlFor="shopping-item-name" className={`block mb-2 ${LABEL}`}>Item</label>
             <input
+              id="shopping-item-name"
               type="text"
-              placeholder="Add item e.g. Nutritional yeast, Coconut milk, Oat flour..."
+              placeholder="e.g. Coconut milk"
               value={name}
               onChange={(e) => setName(e.target.value)}
               className={FIELD}
@@ -117,20 +119,25 @@ export const ShoppingListView: React.FC<ShoppingListViewProps> = ({
           </div>
 
           <div className="sm:col-span-3">
+            <label htmlFor="shopping-item-qty" className={`block mb-2 ${LABEL}`}>Quantity</label>
             <input
+              id="shopping-item-qty"
               type="text"
-              placeholder="Qty (e.g. 1 can, 500g)"
+              placeholder="e.g. 1 can"
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
               className={FIELD}
             />
           </div>
 
-          <div className="sm:col-span-3 flex gap-2">
+          <div className="sm:col-span-3">
+            <label htmlFor="shopping-item-category" className={`block mb-2 ${LABEL}`}>Category</label>
+            <div className="flex gap-2">
             <select
+              id="shopping-item-category"
               value={category}
               onChange={(e) => setCategory(e.target.value as any)}
-              className="w-full px-4 py-3 text-sm rounded-full bg-cream/60 ring-1 ring-ink/10 text-ink focus:outline-none focus:ring-2 focus:ring-ink"
+              className="w-full px-4 min-h-11 text-sm rounded-full bg-cream/60 ring-1 ring-ink/10 text-ink focus:outline-none focus:ring-2 focus:ring-ink"
             >
               <option value="produce">Produce</option>
               <option value="protein">Veg Protein</option>
@@ -144,11 +151,13 @@ export const ShoppingListView: React.FC<ShoppingListViewProps> = ({
             <button
               type="submit"
               disabled={!name.trim()}
-              className={`px-4 py-3 flex items-center justify-center shrink-0 disabled:bg-ink/10 disabled:text-ink/35 disabled:cursor-not-allowed ${PILL_DARK}`}
+              className={`min-w-11 min-h-11 px-4 flex items-center justify-center shrink-0 disabled:bg-ink/10 disabled:text-ink/45 disabled:cursor-not-allowed ${PILL_DARK}`}
               title="Add item"
+              aria-label="Add item to shopping list"
             >
               <Plus className="w-4 h-4" />
             </button>
+            </div>
           </div>
         </div>
       </form>
@@ -176,7 +185,8 @@ export const ShoppingListView: React.FC<ShoppingListViewProps> = ({
               <div className="flex items-start gap-3 flex-1">
                 <button
                   onClick={() => onToggleItem(item.id)}
-                  className="mt-0.5 cursor-pointer shrink-0"
+                  className="-m-2 w-11 h-11 shrink-0 flex items-center justify-center cursor-pointer shrink-0"
+                  aria-label={item.isChecked ? `Untick ${item.name}` : `Tick ${item.name}`}
                 >
                   {item.isChecked ? (
                     <CheckSquare className="w-5 h-5 text-ink" />
@@ -194,20 +204,20 @@ export const ShoppingListView: React.FC<ShoppingListViewProps> = ({
                     >
                       {item.name}
                     </span>
-                    <span className="font-mono text-[11px] text-ink/60 bg-cream px-2 py-0.5 rounded-full">
+                    <span className="font-mono text-xs text-ink/60 bg-cream px-2 py-0.5 rounded-full">
                       {item.amount}
                     </span>
                   </div>
 
                   {item.recipeSource && (
-                    <p className="text-[11px] text-ink/45 mt-0.5">
+                    <p className="text-xs text-ink/60 mt-0.5">
                       For: {item.recipeSource}
                     </p>
                   )}
 
                   {/* Cheaper alternative tip on shopping list */}
                   {item.cheaperSwapSuggestion && (
-                    <div className="mt-2 flex items-center gap-1.5 text-[11px] text-ink bg-amber-50 ring-1 ring-amber-200 px-3 py-1 rounded-full max-w-fit">
+                    <div className="mt-2 flex items-center gap-1.5 text-xs text-ink bg-amber-50 ring-1 ring-amber-200 px-3 py-1 rounded-full max-w-fit">
                       <Coins className="w-3.5 h-3.5 text-amber-600 shrink-0" />
                       <span>Budget Tip: {item.cheaperSwapSuggestion}</span>
                     </div>
@@ -217,8 +227,9 @@ export const ShoppingListView: React.FC<ShoppingListViewProps> = ({
 
               <button
                 onClick={() => onDeleteItem(item.id)}
-                className="text-ink/35 hover:text-brand-red hover:bg-brand-red/10 p-2 rounded-full transition-colors cursor-pointer"
+                className="text-ink/45 hover:text-brand-red hover:bg-brand-red/10 w-11 h-11 shrink-0 flex items-center justify-center rounded-full transition-colors cursor-pointer"
                 title="Remove item"
+                aria-label={`Remove ${item.name}`}
               >
                 <Trash2 className="w-4 h-4" />
               </button>

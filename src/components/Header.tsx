@@ -35,17 +35,17 @@ export const Header: React.FC<HeaderProps> = ({
     }`;
 
   const countClass = (active: boolean) =>
-    `font-mono text-[11px] px-1.5 py-0.5 rounded-full ${active ? 'bg-cream/20 text-cream' : 'bg-ink/10 text-ink/70'}`;
+    `font-mono text-xs px-1.5 py-0.5 rounded-full ${active ? 'bg-cream/20 text-cream' : 'bg-ink/10 text-ink/70'}`;
 
   const mobileClass = (active: boolean) =>
-    `flex flex-col items-center py-1 px-2.5 rounded-lg text-[11px] font-medium relative ${
-      active ? 'text-ink font-semibold' : 'text-ink/55'
+    `flex flex-col items-center justify-center min-h-11 min-w-11 py-1.5 px-2 rounded-lg text-xs font-medium relative ${
+      active ? 'text-ink font-semibold' : 'text-ink/65'
     }`;
 
   return (
     <header id="app-header" className="sticky top-0 z-30 bg-cream/90 text-ink border-b border-ink/10 backdrop-blur-md">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10">
-        <div className="flex items-center justify-between h-16 sm:h-20 gap-4">
+        <div className="flex items-center justify-between h-14 sm:h-20 gap-4">
           {/* Logo & Brand */}
           <div className="flex items-center gap-3 cursor-pointer shrink-0" onClick={() => setActiveTab('fridge')}>
             <div className="w-10 h-10 rounded-full bg-ink text-cream flex items-center justify-center">
@@ -56,11 +56,11 @@ export const Header: React.FC<HeaderProps> = ({
                 <span className="text-xl sm:text-2xl font-medium tracking-tight text-ink">
                   VeggieFridge
                 </span>
-                <span className="hidden 2xl:inline font-mono text-[10px] uppercase tracking-[0.18em] px-2 py-0.5 rounded-full bg-sky text-ink">
+                <span className="hidden 2xl:inline font-mono text-xs uppercase tracking-[0.18em] px-2 py-0.5 rounded-full bg-sky text-ink">
                   Zero-Waste
                 </span>
               </div>
-              <p className="text-xs text-ink/55 hidden 2xl:block">
+              <p className="text-xs text-ink/65 hidden 2xl:block">
                 Smart vegetarian pantry & recipe guide
               </p>
             </div>
@@ -73,7 +73,7 @@ export const Header: React.FC<HeaderProps> = ({
               <span>Fridge</span>
               <span className={countClass(activeTab === 'fridge')}>{totalFridgeItems}</span>
               {expiringCount > 0 && (
-                <span className="flex items-center gap-1 text-[11px] px-1.5 py-0.5 rounded-full bg-amber-200 text-amber-900 font-medium">
+                <span className="flex items-center gap-1 text-xs px-1.5 py-0.5 rounded-full bg-amber-200 text-amber-900 font-medium">
                   <AlertTriangle className="w-3 h-3" />
                   {expiringCount} soon
                 </span>
@@ -97,7 +97,7 @@ export const Header: React.FC<HeaderProps> = ({
               <ShoppingCart className="w-4 h-4" />
               <span>Shopping List</span>
               {shoppingCount > 0 && (
-                <span className={`font-mono text-[11px] px-1.5 py-0.5 rounded-full ${activeTab === 'shopping' ? 'bg-cream text-ink' : 'bg-ink text-cream'}`}>
+                <span className={`font-mono text-xs px-1.5 py-0.5 rounded-full ${activeTab === 'shopping' ? 'bg-cream text-ink' : 'bg-ink text-cream'}`}>
                   {shoppingCount}
                 </span>
               )}
@@ -119,8 +119,9 @@ export const Header: React.FC<HeaderProps> = ({
             <button
               id="btn-preferences"
               onClick={onOpenPreferences}
-              className="flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium bg-white text-ink ring-1 ring-ink/10 hover:bg-ink hover:text-cream transition-colors cursor-pointer"
+              className="flex items-center justify-center gap-2 min-h-11 min-w-11 px-3 sm:px-4 rounded-full text-sm font-medium bg-white text-ink ring-1 ring-ink/10 hover:bg-ink hover:text-cream transition-colors cursor-pointer"
               title="Personalize diet, budget, and cuisines"
+              aria-label="Preferences"
             >
               <SlidersHorizontal className="w-4 h-4" />
               <span className="hidden sm:inline">Preferences</span>
@@ -129,7 +130,7 @@ export const Header: React.FC<HeaderProps> = ({
         </div>
 
         {/* Mobile / tablet navigation bar */}
-        <div className="xl:hidden flex items-center justify-around py-2 border-t border-ink/10 overflow-x-auto gap-1">
+        <div className="xl:hidden flex items-center justify-around py-1 border-t border-ink/10 overflow-x-auto gap-1">
           <button onClick={() => setActiveTab('fridge')} className={mobileClass(activeTab === 'fridge')}>
             <Refrigerator className="w-4 h-4" />
             <span>Fridge</span>

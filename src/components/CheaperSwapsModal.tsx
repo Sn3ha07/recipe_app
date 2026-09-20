@@ -17,8 +17,8 @@ interface CheaperSwapsModalProps {
 
 // Shared look, from docs/design-system.md
 const CARD = 'bg-white rounded-3xl ring-1 ring-ink/10 shadow-[0_1px_3px_rgba(0,0,0,0.08)]';
-const LABEL = 'font-mono text-[11px] uppercase tracking-[0.18em] text-ink/55';
-const FIELD = 'w-full px-5 py-3 rounded-full bg-cream/60 ring-1 ring-ink/10 text-sm text-ink placeholder:text-ink/40 focus:outline-none focus:ring-2 focus:ring-ink';
+const LABEL = 'font-mono text-xs uppercase tracking-[0.18em] text-ink/65';
+const FIELD = 'w-full px-5 py-3 rounded-full bg-cream/60 ring-1 ring-ink/10 text-sm text-ink placeholder:text-ink/60 focus:outline-none focus:ring-2 focus:ring-ink';
 const PILL_DARK = 'rounded-full bg-ink text-cream font-medium hover:bg-ink-soft transition-colors cursor-pointer';
 
 export const CheaperSwapsModal: React.FC<CheaperSwapsModalProps> = ({
@@ -170,28 +170,29 @@ export const CheaperSwapsModal: React.FC<CheaperSwapsModalProps> = ({
               <TrendingDown className="w-5 h-5 text-emerald-700" />
               <div className="text-xs">
                 <div className="font-semibold text-ink">Avg. ~{avgSavings}% cheaper</div>
-                <div className="text-ink/55">Rough guess, from the swaps below</div>
+                <div className="text-ink/65">Rough guess, from the swaps below</div>
               </div>
             </div>
           )}
         </div>
 
         {/* Search custom swap */}
-        <form onSubmit={handleSearchAlternatives} className="mt-6 pt-6 border-t border-ink/10 flex items-center gap-2">
+        <form onSubmit={handleSearchAlternatives} className="mt-6 pt-6 border-t border-ink/10 flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
           <div className="relative flex-1">
             <Search className="w-4 h-4 text-ink/40 absolute left-5 top-1/2 -translate-y-1/2" />
             <input
               type="text"
-              placeholder="Find cheaper alternative for: e.g. Truffle oil, Pine nuts, Macadamia milk, Fresh herbs..."
+              aria-label="Ingredient to find a cheaper swap for"
+              placeholder="Ingredient to swap, e.g. pine nuts"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-12 pr-5 py-3 rounded-full bg-cream/60 ring-1 ring-ink/10 text-sm text-ink placeholder:text-ink/40 focus:outline-none focus:ring-2 focus:ring-ink"
+              className="w-full pl-12 pr-5 py-3 rounded-full bg-cream/60 ring-1 ring-ink/10 text-sm text-ink placeholder:text-ink/60 focus:outline-none focus:ring-2 focus:ring-ink"
             />
           </div>
           <button
             type="submit"
             disabled={!searchTerm.trim() || isLoading}
-            className={`px-6 py-3 text-sm shrink-0 flex items-center gap-1.5 disabled:bg-ink/10 disabled:text-ink/35 disabled:cursor-not-allowed ${PILL_DARK}`}
+            className={`px-6 min-h-11 text-sm shrink-0 flex items-center justify-center gap-1.5 disabled:bg-ink/10 disabled:text-ink/45 disabled:cursor-not-allowed ${PILL_DARK}`}
           >
             {isLoading ? (
               <div className="w-3.5 h-3.5 border-2 border-cream border-t-transparent rounded-full animate-spin" />
@@ -249,7 +250,7 @@ export const CheaperSwapsModal: React.FC<CheaperSwapsModalProps> = ({
 
               {/* Cheaper Alternative */}
               <div className="mt-4 p-4 rounded-2xl bg-emerald-50 ring-1 ring-emerald-200">
-                <span className="font-mono text-[11px] uppercase tracking-[0.18em] text-emerald-800 block">
+                <span className="font-mono text-xs uppercase tracking-[0.18em] text-emerald-800 block">
                   Delicious Budget Swap
                 </span>
                 <p className="text-lg font-medium tracking-[-0.02em] text-ink mt-1">
@@ -273,7 +274,7 @@ export const CheaperSwapsModal: React.FC<CheaperSwapsModalProps> = ({
             <div className="mt-6 pt-4 border-t border-ink/10 flex items-center justify-end">
               <button
                 onClick={() => handleAddSwap(swap)}
-                className={`px-4 py-2 text-xs flex items-center gap-1.5 ${PILL_DARK}`}
+                className={`px-5 min-h-11 text-xs flex items-center gap-1.5 ${PILL_DARK}`}
               >
                 <ShoppingCart className="w-3.5 h-3.5" />
                 <span>Add Swap to Shopping List</span>

@@ -21,8 +21,8 @@ interface FavoritesViewProps {
 
 // Shared look, from docs/design-system.md
 const CARD = 'bg-white rounded-3xl ring-1 ring-ink/10 shadow-[0_1px_3px_rgba(0,0,0,0.08)]';
-const LABEL = 'font-mono text-[11px] uppercase tracking-[0.18em] text-ink/55';
-const FIELD = 'w-full px-5 py-3 rounded-full bg-cream/60 ring-1 ring-ink/10 text-sm text-ink placeholder:text-ink/40 focus:outline-none focus:ring-2 focus:ring-ink';
+const LABEL = 'font-mono text-xs uppercase tracking-[0.18em] text-ink/65';
+const FIELD = 'w-full px-5 py-3 rounded-full bg-cream/60 ring-1 ring-ink/10 text-sm text-ink placeholder:text-ink/60 focus:outline-none focus:ring-2 focus:ring-ink';
 const PILL_DARK = 'rounded-full bg-ink text-cream font-medium hover:bg-ink-soft transition-colors cursor-pointer';
 
 export const FavoritesView: React.FC<FavoritesViewProps> = ({
@@ -70,13 +70,14 @@ export const FavoritesView: React.FC<FavoritesViewProps> = ({
               >
                 <div>
                   <div className="flex items-center justify-between gap-2 mb-3">
-                    <span className="font-mono text-[10px] uppercase tracking-[0.14em] px-2.5 py-1 rounded-full bg-sky text-ink">
+                    <span className="font-mono text-xs uppercase tracking-[0.14em] px-2.5 py-1 rounded-full bg-sky text-ink">
                       {recipe.cuisine}
                     </span>
                     <button
                       onClick={() => onRemoveFavorite(recipe.id)}
-                      className="text-ink/40 hover:text-brand-red hover:bg-brand-red/10 transition-colors p-2 rounded-full cursor-pointer"
+                      className="text-ink/45 hover:text-brand-red hover:bg-brand-red/10 transition-colors w-11 h-11 -mr-2 shrink-0 flex items-center justify-center rounded-full cursor-pointer"
                       title="Remove from favorites"
+                      aria-label={`Remove ${recipe.title} from favorites`}
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>
@@ -89,7 +90,7 @@ export const FavoritesView: React.FC<FavoritesViewProps> = ({
                     {recipe.description}
                   </p>
 
-                  <div className="flex items-center gap-3 mt-4 text-xs text-ink/55">
+                  <div className="flex items-center gap-3 mt-4 text-xs text-ink/65">
                     <span className="flex items-center gap-1">
                       <Clock className="w-3.5 h-3.5 text-ink/40" />
                       {totalMins}m
@@ -102,7 +103,7 @@ export const FavoritesView: React.FC<FavoritesViewProps> = ({
 
                   {recipe.additionalIngredientsNeeded && recipe.additionalIngredientsNeeded.length > 0 && (
                     <div className="mt-4 pt-3 border-t border-ink/10 flex items-center justify-between text-xs">
-                      <span className="text-[11px] text-ink/55">
+                      <span className="text-xs text-ink/65">
                         {recipe.additionalIngredientsNeeded.length} extra ingredients
                       </span>
                       <button
@@ -113,7 +114,7 @@ export const FavoritesView: React.FC<FavoritesViewProps> = ({
                           }));
                           onAddToShoppingList(items);
                         }}
-                        className="text-[11px] font-medium text-ink hover:underline underline-offset-2 flex items-center gap-1 cursor-pointer"
+                        className="min-h-11 text-xs font-medium text-ink hover:underline underline-offset-2 flex items-center gap-1 cursor-pointer"
                       >
                         <ShoppingCart className="w-3 h-3" />
                         <span>Add to List</span>
@@ -125,7 +126,7 @@ export const FavoritesView: React.FC<FavoritesViewProps> = ({
                 <div className="mt-6 pt-4 border-t border-ink/10 flex items-center justify-end">
                   <button
                     onClick={() => setSelectedRecipe(recipe)}
-                    className={`px-4 py-2 text-xs flex items-center gap-1 ${PILL_DARK}`}
+                    className={`px-5 min-h-11 text-sm flex items-center gap-1 ${PILL_DARK}`}
                   >
                     <span>Cook This</span>
                     <ArrowRight className="w-3 h-3" />

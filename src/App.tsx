@@ -106,6 +106,7 @@ export default function App() {
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [isGeneratingRecipes, setIsGeneratingRecipes] = useState(false);
   const [recipesError, setRecipesError] = useState<string | null>(null);
+  const [focusExpiringMode, setFocusExpiringMode] = useState(false);
   const latestRequestId = useRef(0);
   const lastRequest = useRef<{ focusExpiring: boolean; customQuery?: string; selectedIngredients?: string[] }>({
     focusExpiring: false,
@@ -129,6 +130,11 @@ export default function App() {
   useEffect(() => {
     localStorage.setItem('veggiefridge_shopping', JSON.stringify(shoppingList));
   }, [shoppingList]);
+
+  // A new tab should open at its top, not halfway down the previous page
+  useEffect(() => {
+    window.scrollTo({ top: 0 });
+  }, [activeTab]);
 
   // Toast notification helper
   const showToast = (msg: string) => {
@@ -169,6 +175,7 @@ export default function App() {
     const requestId = ++latestRequestId.current;
     const activeSelected = selectedIngredients !== undefined ? selectedIngredients : selectedCookingIngredients;
     lastRequest.current = { focusExpiring, customQuery, selectedIngredients };
+    setFocusExpiringMode(focusExpiring);
 
     setIsGeneratingRecipes(true);
     setRecipesError(null);
@@ -353,7 +360,7 @@ export default function App() {
     <div className="min-h-screen flex flex-col bg-cream">
       {/* Toast Notification */}
       {toastMessage && (
-        <div className="fixed bottom-5 right-5 z-50 bg-stone-900 text-stone-100 px-4 py-2.5 rounded-2xl shadow-xl text-xs font-semibold flex items-center gap-2 border border-stone-800 animate-in fade-in slide-in-from-bottom-2 duration-200">
+        <div role="status" className="fixed left-1/2 -translate-x-1/2 top-36 xl:top-24 z-50 max-w-[calc(100vw-2rem)] bg-ink text-cream px-4 py-2.5 rounded-2xl shadow-xl text-xs font-semibold flex items-center gap-2 animate-in fade-in slide-in-from-top-2 duration-200">
           <Sparkles className="w-4 h-4 text-emerald-400" />
           <span>{toastMessage}</span>
         </div>
@@ -381,43 +388,40 @@ export default function App() {
         {/* Welcome / Quick Setup Banner on first turn */}
         {showWelcome && (
           <motion.div
-            initial={{ opacity: 0, scale: 0.8, y: -20 }}
+            id="welcome-banner"
+            initial={{ opacity: 0, scale: 0.95, y: -12 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
-            transition={{ type: 'spring', stiffness: 350, damping: 18 }}
-            className="bg-ink text-white rounded-3xl p-6 sm:p-8 shadow-[0_0_0_1px_rgba(33,12,2,0.1),0_8px_24px_rgba(0,0,0,0.18)] flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+            transition={{ type: 'spring', stiffness: 350, damping: 22 }}
+            className="relative bg-white ring-1 ring-ink/10 shadow-[0_1px_3px_rgba(0,0,0,0.08)] rounded-3xl p-5 sm:p-6 pr-14 sm:pr-16"
           >
             <div className="flex items-start gap-4">
               <motion.div
                 animate={{ rotate: [0, -12, 12, -8, 8, 0] }}
                 transition={{ duration: 1.6, repeat: Infinity, repeatDelay: 1.5, ease: 'easeInOut' }}
-                className="p-3 rounded-full bg-white/15 text-white shrink-0"
+                className="hidden sm:flex w-10 h-10 items-center justify-center rounded-full bg-cream text-ink shrink-0"
               >
                 <Sparkles className="w-5 h-5" />
               </motion.div>
               <div>
-                <h3 className="text-3xl sm:text-4xl font-normal leading-[1.05] tracking-[-0.03em] text-white">
+                <h3 className="text-2xl sm:text-3xl font-normal leading-[1.1] tracking-[-0.03em] text-ink">
                   Welcome to VeggieFridge!
                 </h3>
-                <p className="text-sm sm:text-base text-white/80 mt-3 max-w-2xl leading-relaxed">
-                  We pre-loaded sample items with real-time expiry dates so you can see instant waste reminders and recipe generation. Add your own ingredients anytime without calculating expiry dates—we estimate guidelines automatically!
+                <p className="text-sm text-ink/70 mt-2 max-w-2xl leading-relaxed">
+                  We pre-loaded sample items so you can try everything right away. Add your own ingredients anytime, and we will estimate their expiry dates for you.
                 </p>
-                <div className="flex flex-wrap gap-3 mt-5">
-                  <motion.button
-                    whileHover={{ scale: 1.04 }}
-                    whileTap={{ scale: 0.96 }}
+                <div className="flex flex-wrap gap-2 mt-4">
+                  <button
                     onClick={() => setIsPreferencesOpen(true)}
-                    className="px-5 py-2.5 rounded-full bg-white text-ink text-sm font-medium transition-colors hover:bg-cream"
+                    className="min-h-11 px-5 rounded-full bg-ink text-cream text-sm font-medium transition-colors hover:bg-ink-soft cursor-pointer"
                   >
                     Personalize Diet & Budget
-                  </motion.button>
-                  <motion.button
-                    whileHover={{ scale: 1.04 }}
-                    whileTap={{ scale: 0.96 }}
+                  </button>
+                  <button
                     onClick={() => setIsReceiptModalOpen(true)}
-                    className="px-5 py-2.5 rounded-full text-white text-sm font-medium transition-colors ring-1 ring-white/40 hover:bg-white/10"
+                    className="hidden sm:inline-flex items-center min-h-11 px-5 rounded-full text-ink text-sm font-medium transition-colors ring-1 ring-ink/20 hover:bg-cream cursor-pointer"
                   >
                     Test Receipt Scanner
-                  </motion.button>
+                  </button>
                 </div>
               </div>
             </div>
@@ -427,8 +431,9 @@ export default function App() {
                 setShowWelcome(false);
                 localStorage.setItem('veggiefridge_onboarded', 'true');
               }}
-              className="self-start sm:self-center text-white/70 hover:text-white p-1 rounded-full transition-colors cursor-pointer"
+              className="absolute top-2 right-2 sm:top-3 sm:right-3 w-11 h-11 shrink-0 flex items-center justify-center text-ink/65 hover:text-ink hover:bg-cream rounded-full transition-colors cursor-pointer"
               title="Dismiss banner"
+              aria-label="Dismiss welcome message"
             >
               <X className="w-5 h-5" />
             </button>
@@ -452,6 +457,7 @@ export default function App() {
             recipes={recipes}
             isLoading={isGeneratingRecipes}
             error={recipesError}
+            focusExpiring={focusExpiringMode}
             onRetry={() => {
               const r = lastRequest.current;
               handleGenerateRecipes(r.focusExpiring, r.customQuery, r.selectedIngredients);

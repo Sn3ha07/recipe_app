@@ -59,6 +59,19 @@ Text is usually ink. Quieter text is ink at 55% to 70% strength. Borders are ink
 - Main button: ink pill with cream text. Secondary button: white pill with ink text.
 - Section labels: a small monospaced, uppercase label above a large light headline.
 
+## Usability rules
+
+These came from a Laws of UX review of the live app (computer and phone). Keep them when adding new screens.
+
+- **Readable text:** nothing smaller than 12px, and the faintest text is ink at 60% strength or darker so it passes the 4.5 to 1 contrast rule.
+- **Touch targets:** every button, chip and icon button is at least 44px tall and wide on a phone, including small ones like bookmark, trash and close.
+- **One name for one action:** every way of asking for recipes starts with "Get recipes". Do not invent new names for the same action.
+- **Next step stays in reach:** when a choice unlocks a next step (such as selecting ingredients), show that step in a bar fixed to the bottom of the screen.
+- **New tab, new page:** changing tab scrolls to the top.
+- **Messages never cover controls:** confirmation messages appear at the top, under the header.
+- **Fewer, clearer choices:** show a filter only when it would change the list, keep one main button per screen, and keep cards to a few pieces of information.
+- **Labels and names:** every field has a visible label or a clear name, and every icon-only button has a text name for screen readers.
+
 ## Restyle progress
 
 - [x] Round 1: colors and fonts set app-wide, header, welcome banner

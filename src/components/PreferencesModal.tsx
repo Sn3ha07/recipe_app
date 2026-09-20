@@ -19,8 +19,8 @@ interface PreferencesModalProps {
 }
 
 // Shared look, from docs/design-system.md
-const LABEL = 'font-mono text-[11px] uppercase tracking-[0.18em] text-ink/55';
-const FIELD = 'w-full px-5 py-3 rounded-full bg-cream/60 ring-1 ring-ink/10 text-sm text-ink placeholder:text-ink/40 focus:outline-none focus:ring-2 focus:ring-ink';
+const LABEL = 'font-mono text-xs uppercase tracking-[0.18em] text-ink/65';
+const FIELD = 'w-full px-5 py-3 rounded-full bg-cream/60 ring-1 ring-ink/10 text-sm text-ink placeholder:text-ink/60 focus:outline-none focus:ring-2 focus:ring-ink';
 const PILL_DARK = 'rounded-full bg-ink text-cream font-medium hover:bg-ink-soft transition-colors cursor-pointer';
 const OVERLAY = 'fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-ink/60 backdrop-blur-xs overflow-y-auto';
 const PANEL = 'bg-white rounded-3xl w-full max-h-[90vh] overflow-y-auto shadow-[0_0_0_1px_rgba(33,12,2,0.1),0_24px_60px_-12px_rgba(0,0,0,0.55)] animate-in fade-in zoom-in-95 duration-150';
@@ -100,15 +100,17 @@ export const PreferencesModal: React.FC<PreferencesModalProps> = ({
               <h2 className="text-2xl font-normal tracking-[-0.03em] text-ink">
                 Personal Taste & Dietary Setup
               </h2>
-              <p className="text-xs text-ink/55">
-                Simple 1-step preferences for custom recipes
+              <p className="text-xs text-ink/65">
+                A few quick questions for better recipes
               </p>
             </div>
           </div>
 
           <button
             onClick={onClose}
-            className="p-2 rounded-full text-ink/50 hover:text-ink hover:bg-cream transition-colors cursor-pointer"
+            className="w-11 h-11 shrink-0 flex items-center justify-center rounded-full text-ink/65 hover:text-ink hover:bg-cream transition-colors cursor-pointer"
+            aria-label="Close"
+            title="Close"
           >
             <X className="w-5 h-5" />
           </button>
@@ -137,7 +139,7 @@ export const PreferencesModal: React.FC<PreferencesModalProps> = ({
                     <span className="font-medium text-ink">{opt.title}</span>
                     {diet === opt.id && <Check className="w-4 h-4 text-ink stroke-[3]" />}
                   </div>
-                  <p className="text-xs text-ink/55 mt-1">{opt.desc}</p>
+                  <p className="text-xs text-ink/65 mt-1">{opt.desc}</p>
                 </div>
               ))}
             </div>
@@ -161,7 +163,7 @@ export const PreferencesModal: React.FC<PreferencesModalProps> = ({
                   className={`${optionClass(budget === b.id)} text-center`}
                 >
                   <span className="font-medium text-ink block">{b.title}</span>
-                  <span className="text-[11px] text-ink/55 mt-0.5 block">{b.desc}</span>
+                  <span className="text-xs text-ink/65 mt-0.5 block">{b.desc}</span>
                 </div>
               ))}
             </div>
@@ -183,9 +185,10 @@ export const PreferencesModal: React.FC<PreferencesModalProps> = ({
               step="5"
               value={maxTime}
               onChange={(e) => setMaxTime(parseInt(e.target.value))}
+              aria-label="Maximum cooking time in minutes"
               className="w-full accent-ink"
             />
-            <div className="flex justify-between text-[11px] text-ink/45">
+            <div className="flex justify-between text-xs text-ink/60">
               <span>15m (Quick)</span>
               <span>35m (Standard)</span>
               <span>60m (Weekend)</span>
@@ -206,7 +209,7 @@ export const PreferencesModal: React.FC<PreferencesModalProps> = ({
                     key={c}
                     type="button"
                     onClick={() => toggleCuisine(c)}
-                    className={`px-4 py-2 rounded-full text-xs font-medium transition-colors cursor-pointer ${
+                    className={`px-4 min-h-11 rounded-full text-xs font-medium transition-colors cursor-pointer ${
                       selected
                         ? 'bg-ink text-cream'
                         : 'bg-white ring-1 ring-ink/15 text-ink/75 hover:bg-cream'
@@ -227,7 +230,8 @@ export const PreferencesModal: React.FC<PreferencesModalProps> = ({
             <div className="flex gap-2">
               <input
                 type="text"
-                placeholder="e.g. Cilantro, Peanuts, Mushrooms..."
+                aria-label="Ingredient you dislike or are allergic to"
+                placeholder="e.g. Peanuts"
                 value={dislikeInput}
                 onChange={(e) => setDislikeInput(e.target.value)}
                 onKeyDown={(e) => {
@@ -241,7 +245,7 @@ export const PreferencesModal: React.FC<PreferencesModalProps> = ({
               <button
                 type="button"
                 onClick={handleAddDislike}
-                className={`px-5 py-3 text-sm ${PILL_DARK}`}
+                className={`px-5 min-h-11 text-sm ${PILL_DARK}`}
               >
                 Add
               </button>
@@ -257,9 +261,10 @@ export const PreferencesModal: React.FC<PreferencesModalProps> = ({
                     <button
                       type="button"
                       onClick={() => handleRemoveDislike(d)}
-                      className="text-ink/45 hover:text-ink cursor-pointer"
+                      className="w-8 h-8 -mr-2 flex items-center justify-center text-ink/60 hover:text-ink cursor-pointer"
+                      aria-label={`Remove ${d}`}
                     >
-                      <X className="w-3 h-3" />
+                      <X className="w-3.5 h-3.5" />
                     </button>
                   </span>
                 ))}
@@ -272,13 +277,13 @@ export const PreferencesModal: React.FC<PreferencesModalProps> = ({
         <div className="sticky bottom-0 bg-cream px-6 py-4 border-t border-ink/10 flex items-center justify-end gap-2">
           <button
             onClick={onClose}
-            className="px-5 py-2.5 rounded-full bg-white ring-1 ring-ink/15 text-ink/75 text-xs font-medium hover:bg-white/60 transition-colors cursor-pointer"
+            className="px-5 min-h-11 rounded-full bg-white ring-1 ring-ink/15 text-ink/75 text-sm font-medium hover:bg-white/60 transition-colors cursor-pointer"
           >
             Cancel
           </button>
           <button
             onClick={handleSave}
-            className={`px-6 py-2.5 text-xs ${PILL_DARK}`}
+            className={`px-6 min-h-11 text-sm ${PILL_DARK}`}
           >
             Save Preferences
           </button>

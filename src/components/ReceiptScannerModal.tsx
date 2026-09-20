@@ -49,8 +49,8 @@ const downscaleImage = (file: File, maxSide = 2200, quality = 0.8): Promise<stri
   });
 
 // Shared look, from docs/design-system.md
-const LABEL = 'font-mono text-[11px] uppercase tracking-[0.18em] text-ink/55';
-const FIELD = 'w-full px-5 py-3 rounded-full bg-cream/60 ring-1 ring-ink/10 text-sm text-ink placeholder:text-ink/40 focus:outline-none focus:ring-2 focus:ring-ink';
+const LABEL = 'font-mono text-xs uppercase tracking-[0.18em] text-ink/65';
+const FIELD = 'w-full px-5 py-3 rounded-full bg-cream/60 ring-1 ring-ink/10 text-sm text-ink placeholder:text-ink/60 focus:outline-none focus:ring-2 focus:ring-ink';
 const PILL_DARK = 'rounded-full bg-ink text-cream font-medium hover:bg-ink-soft transition-colors cursor-pointer';
 const OVERLAY = 'fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-ink/60 backdrop-blur-xs overflow-y-auto';
 const PANEL = 'bg-white rounded-3xl w-full max-h-[90vh] overflow-y-auto shadow-[0_0_0_1px_rgba(33,12,2,0.1),0_24px_60px_-12px_rgba(0,0,0,0.55)] animate-in fade-in zoom-in-95 duration-150';
@@ -205,7 +205,7 @@ TOTAL: $27.94`);
               <h2 className="text-2xl font-normal tracking-[-0.03em] text-ink">
                 Receipt Scanner
               </h2>
-              <p className="text-xs text-ink/55">
+              <p className="text-xs text-ink/65">
                 Auto-extract vegetarian groceries and estimate shelf-life
               </p>
             </div>
@@ -213,18 +213,22 @@ TOTAL: $27.94`);
 
           <button
             onClick={onClose}
-            className="p-2 rounded-full text-ink/50 hover:text-ink hover:bg-cream transition-colors cursor-pointer"
+            className="w-11 h-11 shrink-0 flex items-center justify-center rounded-full text-ink/65 hover:text-ink hover:bg-cream transition-colors cursor-pointer"
+            aria-label="Close"
+            title="Close"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         <div className="p-6 space-y-5">
+          {extractedItems.length === 0 && (
+          <>
           {/* Mode Switcher */}
           <div className="flex items-center gap-1 p-1 bg-cream rounded-full text-xs font-medium">
             <button
               onClick={() => setActiveMode('upload')}
-              className={`flex-1 py-2.5 rounded-full flex items-center justify-center gap-1.5 transition-colors cursor-pointer ${
+              className={`flex-1 min-h-11 rounded-full flex items-center justify-center gap-1.5 transition-colors cursor-pointer ${
                 activeMode === 'upload' ? 'bg-ink text-cream' : 'text-ink/70 hover:text-ink'
               }`}
             >
@@ -233,7 +237,7 @@ TOTAL: $27.94`);
             </button>
             <button
               onClick={() => setActiveMode('text')}
-              className={`flex-1 py-2.5 rounded-full flex items-center justify-center gap-1.5 transition-colors cursor-pointer ${
+              className={`flex-1 min-h-11 rounded-full flex items-center justify-center gap-1.5 transition-colors cursor-pointer ${
                 activeMode === 'text' ? 'bg-ink text-cream' : 'text-ink/70 hover:text-ink'
               }`}
             >
@@ -265,7 +269,7 @@ TOTAL: $27.94`);
                       setImagePreview(null);
                       if (fileInputRef.current) fileInputRef.current.value = '';
                     }}
-                    className="absolute top-3 right-3 px-3 py-1.5 bg-ink/85 hover:bg-ink text-cream rounded-full text-xs font-medium cursor-pointer"
+                    className="absolute top-3 right-3 px-4 min-h-11 bg-ink/85 hover:bg-ink text-cream rounded-full text-xs font-medium cursor-pointer"
                   >
                     Change photo
                   </button>
@@ -281,7 +285,7 @@ TOTAL: $27.94`);
                   <p className="text-sm font-medium text-ink">
                     Click to upload receipt photo
                   </p>
-                  <p className="text-xs text-ink/55 mt-1">
+                  <p className="text-xs text-ink/65 mt-1">
                     Supports JPG, PNG, WEBP from grocery stores or mobile cameras
                   </p>
                 </div>
@@ -294,7 +298,7 @@ TOTAL: $27.94`);
                 placeholder="Paste receipt text or grocery email confirmation here..."
                 value={textReceipt}
                 onChange={(e) => setTextReceipt(e.target.value)}
-                className="w-full p-4 text-xs rounded-3xl bg-cream/60 ring-1 ring-ink/10 text-ink placeholder:text-ink/40 focus:outline-none focus:ring-2 focus:ring-ink font-mono"
+                className="w-full p-4 text-xs rounded-3xl bg-cream/60 ring-1 ring-ink/10 text-ink placeholder:text-ink/60 focus:outline-none focus:ring-2 focus:ring-ink font-mono"
               />
               <div className="flex justify-end">
                 <button
@@ -306,6 +310,9 @@ TOTAL: $27.94`);
                 </button>
               </div>
             </div>
+          )}
+
+          </>
           )}
 
           {errorMessage && (
@@ -355,13 +362,13 @@ TOTAL: $27.94`);
                     setImagePreview(null);
                     setTextReceipt('');
                   }}
-                  className="text-xs text-ink/55 hover:text-ink cursor-pointer"
+                  className="min-h-11 px-3 -mr-3 text-xs text-ink/65 hover:text-ink cursor-pointer"
                 >
                   Scan another
                 </button>
               </div>
 
-              <div className="space-y-2 max-h-64 overflow-y-auto p-1">
+              <div className="space-y-2 p-1">
                 {extractedItems.map((item, idx) => (
                   <div
                     key={idx}
@@ -382,15 +389,15 @@ TOTAL: $27.94`);
                       </div>
                       <div>
                         <div className="font-semibold text-sm text-ink">{item.name}</div>
-                        <div className="text-[11px] text-ink/55 mt-0.5">
+                        <div className="text-xs text-ink/65 mt-0.5">
                           Qty: {item.quantity} • {item.storageTip}
                         </div>
                       </div>
                     </div>
 
                     <div className="text-right shrink-0">
-                      <span className="inline-flex items-center gap-1 font-mono text-[11px] px-2.5 py-1 rounded-full bg-cream text-ink/70">
-                        <Clock className="w-3 h-3 text-ink/50" />
+                      <span className="inline-flex items-center gap-1 font-mono text-xs px-2.5 py-1 rounded-full bg-cream text-ink/70">
+                        <Clock className="w-3 h-3 text-ink/65" />
                         ~{item.estimatedShelfLifeDays}d
                       </span>
                     </div>
@@ -398,14 +405,16 @@ TOTAL: $27.94`);
                 ))}
               </div>
 
-              <button
-                onClick={handleAddSelected}
-                disabled={extractedItems.filter((i) => i.selected).length === 0}
-                className={`w-full py-3.5 text-sm flex items-center justify-center gap-2 disabled:bg-ink/10 disabled:text-ink/35 disabled:cursor-not-allowed ${PILL_DARK}`}
-              >
-                <Refrigerator className="w-4 h-4" />
-                <span>Add Selected ({extractedItems.filter((i) => i.selected).length}) to Virtual Fridge</span>
-              </button>
+              <div className="sticky bottom-0 -mx-6 -mb-6 px-6 pb-6 pt-3 bg-white border-t border-ink/10">
+                <button
+                  onClick={handleAddSelected}
+                  disabled={extractedItems.filter((i) => i.selected).length === 0}
+                  className={`w-full min-h-12 text-sm flex items-center justify-center gap-2 disabled:bg-ink/10 disabled:text-ink/45 disabled:cursor-not-allowed ${PILL_DARK}`}
+                >
+                  <Refrigerator className="w-4 h-4" />
+                  <span>Add Selected ({extractedItems.filter((i) => i.selected).length}) to Virtual Fridge</span>
+                </button>
+              </div>
             </div>
           )}
         </div>

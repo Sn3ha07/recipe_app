@@ -27,7 +27,7 @@ interface RecipeDetailModalProps {
 }
 
 // Shared look, from docs/design-system.md
-const LABEL = 'font-mono text-[11px] uppercase tracking-[0.18em] text-ink/55';
+const LABEL = 'font-mono text-xs uppercase tracking-[0.18em] text-ink/65';
 const PILL_DARK = 'rounded-full bg-ink text-cream font-medium hover:bg-ink-soft transition-colors cursor-pointer';
 
 export const RecipeDetailModal: React.FC<RecipeDetailModalProps> = ({
@@ -66,7 +66,7 @@ export const RecipeDetailModal: React.FC<RecipeDetailModalProps> = ({
         {/* Modal Header */}
         <div className="sticky top-0 z-10 bg-white/95 backdrop-blur-md px-6 py-4 border-b border-ink/10 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <span className="font-mono text-[10px] uppercase tracking-[0.14em] px-2.5 py-1 rounded-full bg-sky text-ink">
+            <span className="font-mono text-xs uppercase tracking-[0.14em] px-2.5 py-1 rounded-full bg-sky text-ink">
               {recipe.cuisine || 'Vegetarian'}
             </span>
             <span className="text-xs font-medium px-2.5 py-1 rounded-full bg-cream text-ink/70">
@@ -77,7 +77,7 @@ export const RecipeDetailModal: React.FC<RecipeDetailModalProps> = ({
           <div className="flex items-center gap-2">
             <button
               onClick={() => onToggleFavorite(recipe)}
-              className={`px-3.5 py-2 rounded-full transition-colors flex items-center gap-1.5 text-xs font-medium cursor-pointer ${
+              className={`px-4 min-h-11 rounded-full transition-colors flex items-center gap-1.5 text-xs font-medium cursor-pointer ${
                 isFavorite
                   ? 'bg-amber-100 text-amber-900 ring-1 ring-amber-300'
                   : 'bg-white text-ink/75 ring-1 ring-ink/15 hover:bg-cream'
@@ -89,7 +89,9 @@ export const RecipeDetailModal: React.FC<RecipeDetailModalProps> = ({
 
             <button
               onClick={onClose}
-              className="p-2 rounded-full text-ink/50 hover:text-ink hover:bg-cream transition-colors cursor-pointer"
+              className="w-11 h-11 shrink-0 flex items-center justify-center rounded-full text-ink/65 hover:text-ink hover:bg-cream transition-colors cursor-pointer"
+              aria-label="Close recipe"
+              title="Close"
             >
               <X className="w-5 h-5" />
             </button>
@@ -113,10 +115,10 @@ export const RecipeDetailModal: React.FC<RecipeDetailModalProps> = ({
             <div>
               <div className={`flex items-center justify-center gap-1 ${LABEL}`}>
                 <Clock className="w-3.5 h-3.5" />
-                <span>Total Time</span>
+                <span>Time</span>
               </div>
               <p className="text-lg font-medium text-ink mt-1">{totalTime} mins</p>
-              <p className="text-[11px] text-ink/50">Prep {recipe.prepTimeMinutes}m • Cook {recipe.cookTimeMinutes}m</p>
+              <p className="text-xs text-ink/65">Prep {recipe.prepTimeMinutes}m • Cook {recipe.cookTimeMinutes}m</p>
             </div>
 
             <div className="border-x border-ink/10">
@@ -125,16 +127,16 @@ export const RecipeDetailModal: React.FC<RecipeDetailModalProps> = ({
                 <span>Servings</span>
               </div>
               <p className="text-lg font-medium text-ink mt-1">{recipe.servings} portions</p>
-              <p className="text-[11px] text-ink/50">Generous size</p>
+              
             </div>
 
             <div>
               <div className={`flex items-center justify-center gap-1 ${LABEL}`}>
                 <ChefHat className="w-3.5 h-3.5" />
-                <span>Budget Tier</span>
+                <span>Budget</span>
               </div>
               <p className="text-lg font-medium text-ink capitalize mt-1">{recipe.budgetTier || 'Everyday'}</p>
-              <p className="text-[11px] text-ink/50">Cost-conscious</p>
+              
             </div>
           </div>
 
@@ -162,9 +164,6 @@ export const RecipeDetailModal: React.FC<RecipeDetailModalProps> = ({
                     ? `Requires 1 more ingredient to make this dish: ${recipe.additionalIngredientsNeeded[0]?.name}`
                     : `Requires ${recipe.additionalIngredientsNeeded.length} more ingredients to make this dish: ${recipe.additionalIngredientsNeeded.map((a) => a.name).join(', ')}`}
                 </span>
-                <p className="text-ink/70 mt-1">
-                  You already have {recipe.usedFridgeIngredients?.join(', ') || 'essential items'} in your fridge. Add the missing {recipe.additionalIngredientsNeeded.length === 1 ? 'item' : 'items'} to your shopping list to make this recipe!
-                </p>
               </div>
             </div>
           )}
@@ -215,7 +214,7 @@ export const RecipeDetailModal: React.FC<RecipeDetailModalProps> = ({
                   </p>
                   <button
                     onClick={handleAddMissingToShopping}
-                    className="text-xs font-medium text-ink hover:underline underline-offset-2 flex items-center gap-1 cursor-pointer"
+                    className="min-h-11 text-xs font-medium text-ink hover:underline underline-offset-2 flex items-center gap-1 cursor-pointer"
                   >
                     <ShoppingCart className="w-3.5 h-3.5" />
                     <span>Add all to Shopping List</span>
@@ -228,7 +227,7 @@ export const RecipeDetailModal: React.FC<RecipeDetailModalProps> = ({
                       className="px-4 py-3 rounded-2xl bg-cream text-sm flex items-center justify-between"
                     >
                       <span className="font-medium text-ink">{ing.name}</span>
-                      <span className="text-ink/55 font-mono text-[11px]">{ing.amount}</span>
+                      <span className="text-ink/65 font-mono text-xs">{ing.amount}</span>
                     </div>
                   ))}
                 </div>
@@ -307,7 +306,7 @@ export const RecipeDetailModal: React.FC<RecipeDetailModalProps> = ({
                     <div>
                       <h5 className="font-semibold text-ink text-sm flex items-center justify-between gap-2">
                         <span>{link.title}</span>
-                        <ArrowRight className="w-3.5 h-3.5 text-ink/50 shrink-0" />
+                        <ArrowRight className="w-3.5 h-3.5 text-ink/65 shrink-0" />
                       </h5>
                       <p className="text-xs text-ink/65 mt-1.5 leading-snug">
                         {link.whyTry}
@@ -327,7 +326,7 @@ export const RecipeDetailModal: React.FC<RecipeDetailModalProps> = ({
                         href={`https://www.google.com/search?q=${encodeURIComponent(link.query + ' vegetarian recipe')}`}
                         target="_blank"
                         rel="noreferrer"
-                        className="text-ink/50 hover:text-ink flex items-center gap-1"
+                        className="text-ink/65 hover:text-ink flex items-center gap-1"
                       >
                         <span>Search web</span>
                         <ExternalLink className="w-3 h-3" />
@@ -341,18 +340,10 @@ export const RecipeDetailModal: React.FC<RecipeDetailModalProps> = ({
         </div>
 
         {/* Modal Footer */}
-        <div className="sticky bottom-0 bg-cream px-6 py-4 border-t border-ink/10 flex items-center justify-between">
-          <button
-            onClick={() => onToggleFavorite(recipe)}
-            className="text-xs font-medium text-ink/70 hover:text-ink flex items-center gap-1.5 cursor-pointer"
-          >
-            {isFavorite ? <BookmarkCheck className="w-4 h-4 text-amber-600" /> : <Bookmark className="w-4 h-4" />}
-            <span>{isFavorite ? 'Remove from Saved' : 'Save for Later'}</span>
-          </button>
-
+        <div className="sticky bottom-0 bg-cream px-6 py-4 border-t border-ink/10 flex items-center justify-end">
           <button
             onClick={onClose}
-            className={`px-6 py-2.5 text-xs ${PILL_DARK}`}
+            className={`px-8 min-h-11 text-sm ${PILL_DARK}`}
           >
             Done
           </button>
